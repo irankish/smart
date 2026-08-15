@@ -1,0 +1,2499 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ارائه وضعیت پروژه سامانه SMART Banking — بانک تجارت — شرکت کارت اعتباری ایران کیش">
+<meta name="theme-color" content="#071a33">
+<title>ارائه وضعیت پروژه سامانه SMART Banking | بانک تجارت</title>
+<style>
+/* ============================================================
+   DESIGN TOKENS
+============================================================ */
+:root{
+  --navy-950:#030e1e;
+  --navy-900:#071a33;
+  --navy-850:#092142;
+  --navy-800:#0b2547;
+  --navy-700:#12335f;
+  --navy-600:#1a4379;
+  --azure:#2f7de1;
+  --azure-deep:#0f4c9c;
+  --azure-soft:#7fb0ea;
+  --sky:#bcd7f5;
+  --gold:#c9a24b;
+  --gold-soft:#e6cf96;
+  --gold-dim:rgba(201,162,75,.34);
+  --paper:#f7f5f0;
+  --card:#ffffff;
+  --ink:#101f33;
+  --ink-2:#33465e;
+  --muted:#5d6f85;
+  --line:rgba(18,51,95,.13);
+  --line-dark:rgba(188,215,245,.14);
+  --ivory-txt:#eef3fa;
+  --muted-dark:#9db4d1;
+
+  --font:"Vazirmatn","Vazir","IRANSansX","IRANSans","B Yekan","B Nazanin","Segoe UI",Tahoma,Arial,sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --ease-io:cubic-bezier(.65,0,.35,1);
+  --r-lg:22px; --r-md:16px; --r-sm:11px;
+
+  --pat-dark:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64'><path d='M64 0H0v64' fill='none' stroke='%23bcd7f5' stroke-opacity='.045'/></svg>");
+  --pat-light:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='26' height='26'><circle cx='1.5' cy='1.5' r='1.1' fill='%2312335f' fill-opacity='.055'/></svg>");
+  --pat-star:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><g fill='none' stroke='%23c9a24b' stroke-opacity='.08'><rect x='38' y='38' width='44' height='44'/><rect x='38' y='38' width='44' height='44' transform='rotate(45 60 60)'/></g></svg>");
+}
+
+/* ============================================================
+   RESET / BASE
+============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:clamp(13.5px,.55vw + 8.6px,18px)}
+html,body{height:100%}
+body{
+  font-family:var(--font);
+  background:var(--navy-950);
+  color:var(--ink);
+  overflow:hidden;
+  overscroll-behavior:none;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+img{max-width:100%;display:block}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+ul,ol{list-style:none}
+::selection{background:rgba(201,162,75,.35)}
+
+/* ============================================================
+   PROGRESS BAR
+============================================================ */
+.progress{
+  position:fixed;inset-block-start:0;inset-inline:0;height:3px;z-index:46;
+  background:rgba(188,215,245,.12);
+}
+.progress span{
+  display:block;height:100%;width:0;
+  background:linear-gradient(270deg,var(--gold),var(--gold-soft) 60%,var(--azure-soft));
+  box-shadow:0 0 14px rgba(201,162,75,.55);
+  transition:width .7s var(--ease);
+}
+
+/* ============================================================
+   STAGE & SLIDES
+============================================================ */
+.stage{position:fixed;inset:0;z-index:1}
+.slide{
+  position:absolute;inset:0;
+  opacity:0;visibility:hidden;pointer-events:none;
+  transform:translateX(0) scale(.99);
+  transition:opacity .55s var(--ease),transform .8s var(--ease),visibility 0s linear .8s;
+  overflow:hidden;
+  display:flex;
+}
+.slide.is-active{
+  opacity:1;visibility:visible;pointer-events:auto;transform:none;z-index:2;
+  transition:opacity .6s var(--ease) .06s,transform .85s var(--ease),visibility 0s;
+}
+.slide.pre-next{transform:translateX(-4.5%) scale(.988);transition:none}
+.slide.pre-prev{transform:translateX(4.5%) scale(.988);transition:none}
+.slide.exit-next{opacity:0;transform:translateX(4.5%) scale(.99)}
+.slide.exit-prev{opacity:0;transform:translateX(-4.5%) scale(.99)}
+
+.slide--dark{background:var(--navy-900);color:var(--ivory-txt)}
+.slide--light{background:var(--paper);color:var(--ink)}
+
+/* layered backgrounds */
+.s-bg{position:absolute;inset:0;pointer-events:none;z-index:0}
+.slide--dark .s-bg{
+  background:
+    radial-gradient(120% 90% at 82% -12%,rgba(47,125,225,.30),transparent 55%),
+    radial-gradient(90% 80% at 8% 112%,rgba(15,76,156,.42),transparent 58%),
+    radial-gradient(70% 60% at 50% 55%,rgba(201,162,75,.06),transparent 60%),
+    var(--pat-dark),
+    linear-gradient(160deg,var(--navy-900) 0%,var(--navy-950) 100%);
+}
+.slide--light .s-bg{
+  background:
+    radial-gradient(90% 70% at 88% -10%,rgba(47,125,225,.10),transparent 55%),
+    radial-gradient(70% 55% at 4% 110%,rgba(201,162,75,.10),transparent 60%),
+    var(--pat-light),
+    linear-gradient(175deg,#fbfaf6 0%,var(--paper) 55%,#f1f0ea 100%);
+}
+.s-bg::after{ /* slow ambient drift */
+  content:"";position:absolute;inset:-12%;
+  background:radial-gradient(46% 38% at 30% 30%,rgba(127,176,234,.10),transparent 70%);
+  animation:drift 26s ease-in-out infinite alternate;
+}
+.slide--light .s-bg::after{background:radial-gradient(46% 38% at 70% 26%,rgba(47,125,225,.07),transparent 70%)}
+@keyframes drift{from{transform:translate3d(-2%,1%,0) scale(1)}to{transform:translate3d(2.5%,-2%,0) scale(1.07)}}
+
+.slide--cover .s-bg{background:var(--pat-star),radial-gradient(120% 90% at 80% -14%,rgba(47,125,225,.34),transparent 56%),radial-gradient(85% 75% at 10% 112%,rgba(15,76,156,.5),transparent 60%),linear-gradient(158deg,#0a2244 0%,var(--navy-950) 100%)}
+
+/* ghost slide number */
+.ghost{
+  position:absolute;inset-inline-end:clamp(6px,2vw,34px);bottom:9vh;z-index:0;
+  font-size:clamp(7rem,22vh,15rem);font-weight:800;line-height:1;
+  color:rgba(16,51,95,.045);pointer-events:none;user-select:none;
+}
+.slide--dark .ghost{color:rgba(188,215,245,.05)}
+
+/* wrap */
+.wrap{
+  position:relative;z-index:2;flex:1;min-height:0;
+  width:100%;max-width:1500px;margin-inline:auto;
+  padding:clamp(22px,4.6vh,54px) clamp(26px,5vw,86px) clamp(98px,13vh,130px);
+  display:flex;flex-direction:column;
+  overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(127,176,234,.35) transparent;
+}
+.wrap::-webkit-scrollbar{width:6px}
+.wrap::-webkit-scrollbar-thumb{background:rgba(127,176,234,.3);border-radius:99px}
+
+/* ============================================================
+   REVEALS
+============================================================ */
+[data-reveal]{opacity:0;transform:translateY(24px);transition:opacity .75s var(--ease),transform .75s var(--ease)}
+[data-reveal].in{opacity:1;transform:none}
+[data-reveal].r-mask{opacity:1;transform:none}
+.r-mask .mask-line{display:block;transform:translateY(118%);transition:transform .95s var(--ease);transition-delay:inherit}
+.r-mask.in .mask-line{transform:none}
+.mask{display:block;overflow:hidden}
+
+/* ============================================================
+   SLIDE HEADER PATTERN
+============================================================ */
+.shead{display:flex;align-items:center;gap:clamp(14px,1.8vw,26px);margin-bottom:clamp(18px,3.4vh,36px)}
+.shead-num{
+  flex:none;width:clamp(52px,5.6vw,74px);height:clamp(52px,5.6vw,74px);
+  display:grid;place-items:center;border-radius:20px;
+  font-weight:800;font-size:clamp(1.2rem,1.8vw,1.7rem);
+  color:var(--gold);
+  border:1px solid var(--gold-dim);
+  background:linear-gradient(160deg,rgba(201,162,75,.14),rgba(201,162,75,.03));
+}
+.slide--light .shead-num{background:linear-gradient(160deg,rgba(201,162,75,.16),rgba(201,162,75,.04));box-shadow:0 8px 20px -12px rgba(201,162,75,.5)}
+.eyebrow{font-size:clamp(.8rem,1vw,.95rem);font-weight:600;color:var(--azure);margin-bottom:6px}
+.slide--dark .eyebrow{color:var(--gold-soft)}
+.stitle{font-size:clamp(1.55rem,2.9vw,2.6rem);font-weight:800;line-height:1.35}
+.rule{width:64px;height:3px;border-radius:99px;margin-top:12px;background:linear-gradient(270deg,var(--gold),transparent)}
+.lead{
+  font-size:clamp(.95rem,1.25vw,1.16rem);line-height:2;color:var(--ink-2);
+  max-width:66ch;margin-bottom:clamp(14px,2.6vh,28px);
+}
+.slide--dark .lead{color:var(--muted-dark)}
+.lead b,.txt b{font-weight:700}
+
+/* ============================================================
+   COMPONENTS
+============================================================ */
+.chip{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:9px 18px;border-radius:999px;font-size:clamp(.82rem,1vw,1rem);font-weight:600;
+  border:1px solid var(--line-dark);color:var(--sky);
+  background:rgba(188,215,245,.06);
+}
+.chip .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px rgba(201,162,75,.8)}
+.slide--light .chip{border-color:var(--line);color:var(--navy-700);background:rgba(15,76,156,.05)}
+
+.bullets{display:flex;flex-direction:column;gap:clamp(10px,1.6vh,16px)}
+.bullets li{
+  display:flex;gap:14px;align-items:flex-start;
+  padding:clamp(12px,1.7vh,18px) clamp(14px,1.5vw,20px);
+  border-radius:var(--r-md);
+  background:linear-gradient(180deg,#ffffff,#f4f6fb);
+  border:1px solid var(--line);
+  box-shadow:0 1px 2px rgba(11,37,71,.05),0 14px 30px -22px rgba(11,37,71,.35);
+  transition:transform .45s var(--ease),border-color .45s var(--ease),box-shadow .45s var(--ease);
+}
+.bullets li:hover{transform:translateY(-3px);border-color:rgba(201,162,75,.55);box-shadow:0 2px 3px rgba(11,37,71,.05),0 22px 42px -22px rgba(11,37,71,.45)}
+.slide--dark .bullets li{
+  background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+  border:1px solid var(--line-dark);box-shadow:0 18px 40px -26px rgba(3,14,30,.9);
+}
+.slide--dark .bullets li:hover{border-color:rgba(201,162,75,.5)}
+.b-ico{
+  flex:none;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;
+  color:var(--azure-deep);background:rgba(47,125,225,.12);border:1px solid rgba(47,125,225,.25);
+}
+.slide--dark .b-ico{color:var(--azure-soft);background:rgba(127,176,234,.1);border-color:rgba(127,176,234,.25)}
+.bullets p{font-size:clamp(.9rem,1.12vw,1.08rem);line-height:1.95;color:var(--ink-2)}
+.slide--dark .bullets p{color:#d4e1f2}
+.bullets b{color:var(--ink);font-weight:700}
+.slide--dark .bullets b{color:#fff}
+
+.card-grid{display:grid;gap:clamp(12px,1.6vw,22px)}
+.g-2{grid-template-columns:repeat(2,1fr)}
+.g-3{grid-template-columns:repeat(3,1fr)}
+.g-4{grid-template-columns:repeat(4,1fr)}
+.card{
+  position:relative;border-radius:var(--r-lg);padding:clamp(16px,2vw,26px);
+  background:linear-gradient(180deg,#ffffff,#f4f6fb);
+  border:1px solid var(--line);
+  box-shadow:0 1px 2px rgba(11,37,71,.05),0 18px 38px -26px rgba(11,37,71,.4);
+  transition:transform .5s var(--ease),border-color .5s var(--ease),box-shadow .5s var(--ease);
+  overflow:hidden;
+}
+.card::before{
+  content:"";position:absolute;inset-block-start:0;inset-inline:0;height:3px;
+  background:linear-gradient(270deg,var(--gold),rgba(201,162,75,0));
+  opacity:0;transition:opacity .5s var(--ease);
+}
+.card:hover{transform:translateY(-5px);border-color:rgba(201,162,75,.5);box-shadow:0 2px 4px rgba(11,37,71,.06),0 30px 54px -28px rgba(11,37,71,.5)}
+.card:hover::before{opacity:1}
+.card h3{font-size:clamp(1rem,1.3vw,1.22rem);font-weight:800;margin:12px 0 8px;color:var(--ink)}
+.card p{font-size:clamp(.85rem,1vw,.98rem);line-height:1.95;color:var(--ink-2)}
+.slide--dark .card{background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.025));border-color:var(--line-dark);box-shadow:0 22px 46px -28px rgba(3,14,30,.95)}
+.slide--dark .card h3{color:#fff}
+.slide--dark .card p{color:#cfdcee}
+.c-ico{
+  width:clamp(44px,3.4vw,54px);height:clamp(44px,3.4vw,54px);border-radius:15px;display:grid;place-items:center;
+  color:var(--azure-deep);background:linear-gradient(160deg,rgba(47,125,225,.16),rgba(47,125,225,.05));
+  border:1px solid rgba(47,125,225,.28);
+}
+.slide--dark .c-ico{color:var(--gold-soft);background:linear-gradient(160deg,rgba(201,162,75,.18),rgba(201,162,75,.04));border-color:rgba(201,162,75,.4)}
+.c-ico svg{width:55%;height:55%}
+
+.icon{width:22px;height:22px;flex:none}
+
+/* split layouts */
+.split{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(24px,4vw,64px);align-items:center;flex:1;min-height:0}
+.split.reverse{grid-template-columns:.95fr 1.05fr}
+
+/* ============================================================
+   SLIDE 1 — COVER
+============================================================ */
+.slide--cover .wrap{justify-content:center}
+.cover-orgs{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:clamp(18px,3vh,30px)}
+.cover-kicker{
+  display:inline-flex;align-items:center;gap:12px;
+  color:var(--gold-soft);font-weight:700;font-size:clamp(.9rem,1.2vw,1.15rem);
+  margin-bottom:clamp(14px,2.2vh,22px);
+}
+.cover-kicker::before{content:"";width:46px;height:2px;background:linear-gradient(270deg,var(--gold),transparent)}
+.cover-title{
+  font-size:clamp(2.1rem,5.2vw,4.4rem);font-weight:800;line-height:1.42;
+  margin-bottom:clamp(14px,2.4vh,24px);
+}
+.cover-title .gold-txt{
+  background:linear-gradient(270deg,var(--gold-soft),var(--gold) 45%,#f0dfae);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.cover-sub{font-size:clamp(1rem,1.5vw,1.4rem);color:var(--muted-dark);line-height:2;max-width:60ch;margin-bottom:clamp(22px,4vh,44px)}
+.cover-meta{display:flex;gap:14px;flex-wrap:wrap}
+.meta-pill{
+  display:flex;flex-direction:column;gap:4px;
+  padding:13px 22px;border-radius:15px;min-width:230px;
+  border:1px solid var(--line-dark);
+  background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.02));
+  backdrop-filter:blur(4px);
+  transition:border-color .45s var(--ease),transform .45s var(--ease);
+}
+.meta-pill:hover{border-color:rgba(201,162,75,.55);transform:translateY(-3px)}
+.mp-label{font-size:.78rem;color:var(--gold-soft);font-weight:700}
+.mp-value{font-size:.98rem;color:var(--ivory-txt);font-weight:600}
+.emblem{
+  position:absolute;inset-inline-end:clamp(-40px,-2vw,40px);top:50%;transform:translateY(-50%);
+  width:clamp(360px,44vw,660px);opacity:.9;pointer-events:none;z-index:1;
+  -webkit-mask-image:radial-gradient(80% 80% at 50% 50%,#000 55%,transparent 96%);
+  mask-image:radial-gradient(80% 80% at 50% 50%,#000 55%,transparent 96%);
+}
+.ring-a{animation:spin 90s linear infinite;transform-origin:50% 50%}
+.ring-b{animation:spin 60s linear infinite reverse;transform-origin:50% 50%}
+@keyframes spin{to{transform:rotate(360deg)}}
+.cover-foot{
+  position:absolute;bottom:clamp(88px,12vh,116px);inset-inline-start:clamp(26px,5vw,86px);z-index:3;
+  display:flex;align-items:center;gap:10px;color:var(--muted-dark);font-size:.85rem;
+}
+.pulse-dot{width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 0 rgba(201,162,75,.6);animation:pulse 2.6s var(--ease-io) infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(201,162,75,.55)}70%{box-shadow:0 0 0 12px rgba(201,162,75,0)}100%{box-shadow:0 0 0 0 rgba(201,162,75,0)}}
+
+/* ============================================================
+   SLIDE 2 — TOC
+============================================================ */
+.toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 clamp(28px,4vw,70px);flex:1;align-content:start}
+.toc-item{
+  display:flex;align-items:center;gap:16px;
+  padding:clamp(10px,1.5vh,15px) 8px;border-bottom:1px solid var(--line);
+  transition:background .4s var(--ease),padding .4s var(--ease);
+  border-radius:8px;
+}
+.toc-item:hover{background:rgba(15,76,156,.05);padding-inline-start:16px}
+.toc-num{
+  flex:none;width:38px;height:38px;border-radius:11px;display:grid;place-items:center;
+  font-weight:800;font-size:.95rem;color:var(--azure-deep);
+  border:1px solid rgba(15,76,156,.25);background:rgba(47,125,225,.08);
+  transition:all .4s var(--ease);
+}
+.toc-item:hover .toc-num{color:#fff;background:var(--gold);border-color:var(--gold);box-shadow:0 8px 18px -8px rgba(201,162,75,.7)}
+.toc-item p{font-size:clamp(.9rem,1.1vw,1.06rem);font-weight:600;color:var(--ink-2);line-height:1.8}
+.toc-item:hover p{color:var(--ink)}
+
+/* ============================================================
+   SLIDE 3 — STATUS BANDS
+============================================================ */
+.bands{display:flex;flex-direction:column;gap:clamp(12px,1.9vh,20px);position:relative;padding-inline-start:26px}
+.bands::before{
+  content:"";position:absolute;inset-block-start:26px;inset-block-end:26px;inset-inline-start:8px;width:2px;
+  background:linear-gradient(180deg,var(--azure-soft),var(--gold) 55%,rgba(201,162,75,.15));
+  border-radius:99px;opacity:.5;
+}
+.band{
+  position:relative;display:flex;gap:clamp(14px,1.6vw,22px);align-items:flex-start;
+  padding:clamp(15px,2.1vh,24px) clamp(16px,1.8vw,26px);
+  border-radius:var(--r-lg);border:1px solid var(--line-dark);
+  background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+  transition:transform .5s var(--ease),border-color .5s var(--ease);
+}
+.band:hover{transform:translateX(-6px);border-color:rgba(201,162,75,.5)}
+.band::before{
+  content:"";position:absolute;inset-inline-start:-22px;top:26px;width:12px;height:12px;border-radius:50%;
+  background:var(--band-c,var(--azure-soft));box-shadow:0 0 14px var(--band-c,var(--azure-soft));
+}
+.band--done{--band-c:#7fb0ea}
+.band--open{--band-c:#e0b45e}
+.band--next{--band-c:#e6cf96}
+.band-tag{
+  flex:none;display:inline-flex;align-items:center;gap:8px;
+  padding:7px 14px;border-radius:999px;font-size:.8rem;font-weight:700;white-space:nowrap;
+  color:var(--band-c);border:1px solid color-mix(in srgb,var(--band-c) 45%,transparent);
+  background:color-mix(in srgb,var(--band-c) 12%,transparent);
+}
+.band p{font-size:clamp(.9rem,1.12vw,1.08rem);line-height:2;color:#d6e2f3}
+.band-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+.band h3{font-size:clamp(1rem,1.25vw,1.2rem);font-weight:800;color:#fff}
+
+/* ============================================================
+   SLIDE 4/5 — SPLIT VISUALS
+============================================================ */
+.doc-visual{position:relative;height:clamp(300px,46vh,440px);display:grid;place-items:center}
+.doc-card{
+  position:absolute;width:min(300px,72%);border-radius:18px;
+  border:1px solid var(--line);background:#fff;
+  box-shadow:0 30px 60px -30px rgba(11,37,71,.45);
+  padding:22px;display:flex;flex-direction:column;gap:11px;
+  transition:transform .6s var(--ease);
+}
+.doc-card .ln{height:9px;border-radius:99px;background:rgba(18,51,95,.12)}
+.doc-card .ln.h{height:13px;width:62%;background:linear-gradient(270deg,var(--azure-deep),var(--azure));opacity:.85}
+.doc-card .ln.g{background:linear-gradient(270deg,var(--gold),rgba(201,162,75,.2));width:74%}
+.doc-card.d1{transform:rotate(-5deg) translate(-16%,6%);z-index:1;opacity:.75}
+.doc-card.d2{transform:rotate(3deg) translate(14%,-2%);z-index:2}
+.doc-visual:hover .d1{transform:rotate(-7deg) translate(-20%,8%)}
+.doc-visual:hover .d2{transform:rotate(4deg) translate(17%,-4%)}
+.doc-lens{
+  position:absolute;z-index:3;width:112px;height:112px;border-radius:50%;
+  inset-inline-start:12%;bottom:6%;
+  border:5px solid var(--azure-deep);
+  background:radial-gradient(circle at 34% 30%,rgba(255,255,255,.65),rgba(188,215,245,.14));
+  box-shadow:0 22px 44px -18px rgba(15,76,156,.6);
+  display:grid;place-items:center;color:var(--azure-deep);
+}
+.doc-lens::after{content:"";position:absolute;bottom:-30px;inset-inline-start:-18px;width:12px;height:44px;border-radius:8px;background:var(--azure-deep);transform:rotate(45deg)}
+.float-tag{
+  position:absolute;z-index:4;padding:8px 16px;border-radius:999px;font-size:.8rem;font-weight:700;
+  color:var(--navy-700);background:#fff;border:1px solid var(--line);
+  box-shadow:0 14px 30px -16px rgba(11,37,71,.4);
+  animation:bob 6s ease-in-out infinite alternate;
+}
+.float-tag.t1{top:4%;inset-inline-end:6%}
+.float-tag.t2{bottom:2%;inset-inline-end:14%;animation-delay:-3s;color:#8a6a1f;border-color:rgba(201,162,75,.5)}
+@keyframes bob{from{transform:translateY(-6px)}to{transform:translateY(7px)}}
+
+.arch-visual{position:relative;height:clamp(300px,46vh,440px);display:grid;place-items:center;perspective:900px}
+.arch-stack{position:relative;width:min(340px,80%);height:100%;transform:rotateX(12deg)}
+.arch-plane{
+  position:absolute;inset-inline:0;height:26%;border-radius:16px;
+  border:1px solid rgba(47,125,225,.35);
+  background:linear-gradient(160deg,rgba(47,125,225,.16),rgba(255,255,255,.65));
+  box-shadow:0 22px 40px -24px rgba(15,76,156,.45);
+  display:flex;align-items:center;gap:10px;padding-inline:18px;
+  font-size:.82rem;font-weight:700;color:var(--navy-700);
+  transition:transform .6s var(--ease);
+}
+.arch-plane .pv{width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px rgba(201,162,75,.8);flex:none}
+.arch-plane.p1{top:2%}
+.arch-plane.p2{top:36%;transform:translateX(-4%)}
+.arch-plane.p3{top:70%;transform:translateX(4%)}
+.arch-visual:hover .p1{transform:translateY(-8px)}
+.arch-visual:hover .p2{transform:translateX(-6%) translateY(-4px)}
+.arch-visual:hover .p3{transform:translateX(6%) translateY(2px)}
+.arch-node{
+  position:absolute;width:14px;height:14px;border-radius:50%;background:var(--azure);
+  box-shadow:0 0 0 6px rgba(47,125,225,.15);
+}
+.arch-node.n1{top:14%;inset-inline-end:8%}
+.arch-node.n2{bottom:8%;inset-inline-start:6%;background:var(--gold);box-shadow:0 0 0 6px rgba(201,162,75,.18)}
+
+/* ============================================================
+   SLIDE 7 — ARCHITECTURE DIAGRAM (dark)
+============================================================ */
+.diagram{
+  position:relative;margin-top:clamp(10px,1.6vh,18px);
+  border-radius:var(--r-lg);border:1px solid var(--line-dark);
+  background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.015));
+  padding:clamp(18px,2.6vw,32px);
+}
+.dia-row{display:flex;align-items:stretch;gap:clamp(6px,.8vw,12px);flex-wrap:wrap;justify-content:center}
+.dia-node{
+  flex:none;min-width:118px;max-width:170px;
+  display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;
+  padding:14px 12px;border-radius:14px;
+  border:1px solid rgba(127,176,234,.28);
+  background:linear-gradient(180deg,rgba(127,176,234,.1),rgba(127,176,234,.03));
+  transition:border-color .4s var(--ease),transform .4s var(--ease);
+}
+.dia-node:hover{border-color:var(--gold);transform:translateY(-4px)}
+.dia-node .dn-ico{width:34px;height:34px;color:var(--azure-soft)}
+.dia-node span{font-size:.82rem;font-weight:700;color:#e8f0fa;line-height:1.6}
+.dia-node small{font-size:.68rem;color:var(--muted-dark);font-weight:600}
+.dia-node.n-client{border-color:rgba(201,162,75,.5);background:linear-gradient(180deg,rgba(201,162,75,.14),rgba(201,162,75,.04))}
+.dia-node.n-client .dn-ico{color:var(--gold-soft)}
+.dia-node.n-core{border-color:rgba(47,125,225,.6);background:linear-gradient(180deg,rgba(47,125,225,.22),rgba(47,125,225,.07));box-shadow:0 0 30px -6px rgba(47,125,225,.5)}
+.dia-link{
+  flex:1 1 34px;min-width:26px;align-self:center;height:2px;border-radius:99px;position:relative;
+  background:repeating-linear-gradient(270deg,rgba(127,176,234,.85) 0 9px,transparent 9px 17px);
+  background-size:17px 2px;
+  animation:dash 1.15s linear infinite;
+}
+.dia-link::after{
+  content:"";position:absolute;top:50%;inset-inline-end:-3px;width:8px;height:8px;border-radius:50%;
+  background:var(--gold);transform:translateY(-50%);box-shadow:0 0 10px rgba(201,162,75,.9);
+}
+@keyframes dash{to{background-position:-17px 0}}
+.dia-cap{
+  display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:clamp(12px,2vh,20px);
+}
+.dia-badge{
+  display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;
+  font-size:.8rem;font-weight:700;color:var(--sky);
+  border:1px solid rgba(127,176,234,.3);background:rgba(127,176,234,.07);
+}
+.dia-badge.gold{color:var(--gold-soft);border-color:rgba(201,162,75,.4);background:rgba(201,162,75,.08)}
+.dia-badge svg{width:15px;height:15px}
+
+/* ============================================================
+   GALLERIES / SCREENSHOT FRAMES
+============================================================ */
+.gallery{display:flex;gap:clamp(14px,2vw,26px);justify-content:center;align-items:flex-start;flex-wrap:wrap}
+.gallery.scroll-x{flex-wrap:nowrap;overflow-x:auto;padding-bottom:10px;scroll-snap-type:x mandatory}
+.shot{margin:0;flex:none;scroll-snap-align:center;text-align:center;transition:transform .55s var(--ease)}
+.shot:hover{transform:translateY(-8px)}
+.shot-frame{
+  position:relative;padding:9px;border-radius:30px;
+  background:linear-gradient(160deg,#ffffff,#e8ecf4);
+  border:1px solid rgba(18,51,95,.16);
+  box-shadow:0 2px 4px rgba(11,37,71,.08),0 30px 56px -26px rgba(11,37,71,.55);
+  transition:box-shadow .55s var(--ease),border-color .55s var(--ease);
+}
+.shot:hover .shot-frame{border-color:rgba(201,162,75,.65);box-shadow:0 3px 6px rgba(11,37,71,.08),0 40px 70px -28px rgba(11,37,71,.6)}
+.shot-frame::before{ /* speaker notch */
+  content:"";position:absolute;top:15px;left:50%;transform:translateX(-50%);
+  width:44px;height:5px;border-radius:99px;background:rgba(18,51,95,.18);z-index:3;
+}
+.shot-screen{
+  position:relative;width:clamp(150px,13.5vw,208px);aspect-ratio:10/19.5;
+  border-radius:22px;overflow:hidden;
+  background:linear-gradient(170deg,#f2f5fb,#e4eaf4);
+}
+.shot-screen img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;background:#fff}
+.shot-fallback{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  padding:18px;
+}
+.shot-fallback .ph-zone{
+  width:82%;flex:1;max-height:78%;border-radius:14px;
+  border:1.5px dashed rgba(15,76,156,.35);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  background:linear-gradient(180deg,rgba(47,125,225,.05),rgba(201,162,75,.05));
+  color:var(--azure-deep);
+  transition:border-color .4s var(--ease),background .4s var(--ease);
+}
+.shot:hover .ph-zone{border-color:rgba(201,162,75,.7);background:linear-gradient(180deg,rgba(201,162,75,.07),rgba(47,125,225,.06))}
+.shot-fallback .ph-zone svg{width:34px;height:34px;opacity:.75}
+.shot-fallback .ph-zone span{font-size:.72rem;font-weight:700;color:var(--muted);line-height:1.9}
+.shot figcaption{
+  margin-top:12px;font-size:.8rem;font-weight:700;color:var(--muted);
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.shot figcaption::before{content:"";width:18px;height:2px;border-radius:99px;background:var(--gold)}
+.shot--wide .shot-screen{width:clamp(220px,20vw,320px);aspect-ratio:4/3.1}
+
+/* ============================================================
+   SLIDE 11 — INTEGRATION PIPELINE
+============================================================ */
+.pipe{display:flex;align-items:stretch;gap:0;margin-top:clamp(8px,1.4vh,14px)}
+.pipe-end{
+  flex:1;display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center;text-align:center;
+  padding:clamp(16px,2.2vw,26px);border-radius:var(--r-lg);
+}
+.pipe-end.sys{background:linear-gradient(160deg,rgba(47,125,225,.14),rgba(47,125,225,.04));border:1px solid rgba(47,125,225,.4)}
+.pipe-end.chabok{background:linear-gradient(160deg,rgba(201,162,75,.14),rgba(201,162,75,.04));border:1px solid rgba(201,162,75,.45)}
+.pipe-end .pe-ico{width:40px;height:40px}
+.pipe-end.sys .pe-ico{color:var(--azure-deep)}
+.pipe-end.chabok .pe-ico{color:#8a6a1f}
+.pipe-end h4{font-size:1.02rem;font-weight:800}
+.pipe-end small{font-size:.78rem;color:var(--muted);font-weight:600;line-height:1.8}
+.pipe-mid{
+  flex:1.1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  padding:10px 8px;position:relative;
+}
+.pipe-line{position:relative;width:100%;height:3px;border-radius:99px;background:linear-gradient(270deg,var(--azure),var(--gold));opacity:.85}
+.pipe-line::before,.pipe-line::after{
+  content:"";position:absolute;top:50%;width:10px;height:10px;border-radius:50%;transform:translateY(-50%);
+}
+.pipe-line::before{inset-inline-start:-3px;background:var(--azure)}
+.pipe-line::after{inset-inline-end:-3px;background:var(--gold)}
+.pipe-gap{
+  padding:9px 18px;border-radius:999px;font-size:.8rem;font-weight:700;color:#8a6a1f;
+  border:1.5px dashed rgba(201,162,75,.65);background:rgba(201,162,75,.09);
+  display:inline-flex;align-items:center;gap:8px;
+}
+.pipe-gap svg{width:15px;height:15px}
+
+/* ============================================================
+   SLIDE 13 — CHECKLIST
+============================================================ */
+.checks{display:flex;flex-direction:column;gap:clamp(9px,1.4vh,14px)}
+.check{
+  display:flex;gap:13px;align-items:flex-start;
+  padding:clamp(11px,1.6vh,16px) clamp(13px,1.4vw,18px);border-radius:var(--r-md);
+  background:#fff;border:1px solid var(--line);
+  box-shadow:0 12px 26px -20px rgba(11,37,71,.4);
+  transition:transform .45s var(--ease),border-color .45s var(--ease);
+}
+.check:hover{transform:translateX(-5px);border-color:rgba(47,125,225,.5)}
+.check .tick{
+  flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;margin-top:3px;
+  color:#fff;background:linear-gradient(160deg,var(--azure),var(--azure-deep));
+  box-shadow:0 8px 16px -8px rgba(47,125,225,.8);
+}
+.check .tick svg{width:15px;height:15px}
+.check p{font-size:clamp(.85rem,1.02vw,1rem);line-height:1.95;color:var(--ink-2)}
+
+/* ============================================================
+   SLIDE 15 — DEPENDENCY BOARD
+============================================================ */
+.dep-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,1.5vw,20px)}
+.dep{
+  position:relative;border-radius:var(--r-lg);overflow:hidden;
+  padding:clamp(15px,1.8vw,24px) clamp(16px,1.9vw,26px);
+  border:1px solid var(--line-dark);
+  background:linear-gradient(165deg,rgba(255,255,255,.07),rgba(255,255,255,.02));
+  transition:transform .5s var(--ease),border-color .5s var(--ease);
+}
+.dep::after{
+  content:"";position:absolute;inset-block-start:0;inset-inline-start:0;width:44%;height:3px;
+  background:linear-gradient(270deg,var(--gold),transparent);
+}
+.dep:hover{transform:translateY(-5px);border-color:rgba(201,162,75,.55)}
+.dep-head{display:flex;align-items:center;gap:13px;margin-bottom:9px}
+.dep-num{
+  flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;
+  font-weight:800;color:var(--gold-soft);border:1px solid rgba(201,162,75,.45);
+  background:rgba(201,162,75,.1);font-size:1.05rem;
+}
+.dep h3{font-size:clamp(.95rem,1.2vw,1.14rem);font-weight:800;color:#fff;line-height:1.6}
+.dep p{font-size:clamp(.8rem,.95vw,.93rem);line-height:1.95;color:#c8d6ea}
+.dep p + p{margin-top:7px}
+.dep-tag{
+  display:inline-flex;margin-top:11px;padding:5px 13px;border-radius:999px;
+  font-size:.72rem;font-weight:700;color:var(--gold-soft);
+  border:1px solid rgba(201,162,75,.4);background:rgba(201,162,75,.08);
+}
+.steps-strip{
+  margin-top:clamp(14px,2.2vh,24px);
+  border-radius:var(--r-lg);border:1px solid rgba(201,162,75,.3);
+  background:linear-gradient(160deg,rgba(201,162,75,.09),rgba(201,162,75,.02));
+  padding:clamp(14px,1.8vw,22px) clamp(16px,2vw,26px);
+}
+.steps-cap{display:flex;align-items:center;gap:10px;color:var(--gold-soft);font-weight:800;font-size:clamp(.9rem,1.1vw,1.05rem);margin-bottom:12px}
+.steps-cap::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px rgba(201,162,75,.9)}
+.steps{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.step{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:9px 16px;border-radius:999px;font-size:clamp(.76rem,.92vw,.88rem);font-weight:700;color:#eaf1fa;
+  border:1px solid rgba(188,215,245,.25);background:rgba(188,215,245,.06);
+  transition:border-color .4s var(--ease),transform .4s var(--ease);
+}
+.step:hover{border-color:var(--gold);transform:translateY(-3px)}
+.step .s-n{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:.7rem;color:var(--gold-soft);border:1px solid rgba(201,162,75,.5)}
+.step-arrow{color:rgba(230,207,150,.6);flex:none;transform:scaleX(-1)}
+.step-arrow svg{width:16px;height:16px}
+
+/* ============================================================
+   CHROME / CONTROLS
+============================================================ */
+.chrome{
+  position:fixed;inset-inline:0;bottom:0;z-index:40;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:13px clamp(18px,3vw,40px);
+  background:linear-gradient(180deg,rgba(6,17,34,0),rgba(6,17,34,.72) 34%,rgba(5,14,28,.92));
+  backdrop-filter:blur(10px);
+  border-top:1px solid rgba(201,162,75,.16);
+}
+.chrome-brand{display:flex;align-items:center;gap:11px;color:#dfe9f6;font-size:clamp(.78rem,.95vw,.92rem);font-weight:700}
+.chrome-brand .bdot{width:9px;height:9px;transform:rotate(45deg);background:linear-gradient(135deg,var(--gold),#f0dfae);box-shadow:0 0 10px rgba(201,162,75,.7)}
+.chrome-brand .sep{opacity:.4;font-weight:400}
+.chrome-tools{display:flex;align-items:center;gap:9px}
+.tool-sep{width:1px;height:26px;background:rgba(188,215,245,.2);margin-inline:5px}
+.tool,.nav-btn{
+  width:42px;height:42px;border-radius:13px;display:grid;place-items:center;
+  color:#cfe0f4;border:1px solid rgba(188,215,245,.22);
+  background:rgba(188,215,245,.06);
+  transition:all .35s var(--ease);
+}
+.tool:hover,.nav-btn:hover{border-color:var(--gold);color:var(--gold-soft);background:rgba(201,162,75,.12);transform:translateY(-2px)}
+.tool.is-on{border-color:var(--gold);color:var(--gold-soft);background:rgba(201,162,75,.16);box-shadow:0 0 18px -4px rgba(201,162,75,.5)}
+.nav-btn{width:46px;height:46px;border-radius:15px}
+.nav-btn svg{width:19px;height:19px}
+.tool svg{width:18px;height:18px}
+.counter{
+  min-width:74px;text-align:center;font-weight:800;font-size:1rem;color:#fff;
+  padding:10px 8px;border-radius:13px;border:1px solid rgba(188,215,245,.16);background:rgba(188,215,245,.05);
+  font-variant-numeric:tabular-nums;
+}
+.counter .c-sep{opacity:.45;margin-inline:6px;font-weight:400}
+.counter #cNow{color:var(--gold-soft)}
+.tool:focus-visible,.nav-btn:focus-visible,.ov-tile:focus-visible,.icon-btn:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+
+/* ============================================================
+   NOTES DRAWER
+============================================================ */
+.drawer{
+  position:fixed;bottom:86px;left:50%;transform:translate(-50%,130%);z-index:60;
+  width:min(900px,94vw);max-height:44vh;overflow:hidden;
+  border-radius:20px;border:1px solid rgba(201,162,75,.4);
+  background:rgba(8,23,44,.94);backdrop-filter:blur(14px);
+  box-shadow:0 40px 80px -30px rgba(3,14,30,.9);
+  color:var(--ivory-txt);
+  transition:transform .6s var(--ease),opacity .5s var(--ease);opacity:0;
+  display:flex;flex-direction:column;
+}
+.drawer.open{transform:translate(-50%,0);opacity:1}
+.drawer-head{
+  display:flex;align-items:center;gap:12px;padding:15px 20px;
+  border-bottom:1px solid rgba(188,215,245,.14);
+}
+.drawer-head .d-ico{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;color:var(--gold-soft);background:rgba(201,162,75,.12);border:1px solid rgba(201,162,75,.35)}
+.drawer-head .d-ico svg{width:18px;height:18px}
+.drawer-head strong{display:block;font-size:.95rem}
+.drawer-head span{display:block;font-size:.75rem;color:var(--muted-dark);margin-top:2px}
+.drawer-head .grow{flex:1}
+.icon-btn{
+  width:36px;height:36px;border-radius:11px;display:grid;place-items:center;flex:none;
+  color:#cfe0f4;border:1px solid rgba(188,215,245,.2);transition:all .3s var(--ease);
+}
+.icon-btn:hover{border-color:var(--gold);color:var(--gold-soft)}
+.icon-btn svg{width:15px;height:15px}
+.drawer-body{padding:18px 22px 22px;font-size:.92rem;line-height:2.15;color:#d8e4f4;overflow-y:auto;scrollbar-width:thin}
+
+/* ============================================================
+   OVERVIEW
+============================================================ */
+.overview{
+  position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:4vh 4vw;
+  background:rgba(4,13,27,.82);backdrop-filter:blur(16px);
+  opacity:0;visibility:hidden;transition:opacity .45s var(--ease),visibility 0s linear .45s;
+}
+.overview.open{opacity:1;visibility:visible;transition:opacity .45s var(--ease)}
+.ov-panel{
+  width:min(1060px,96vw);max-height:90vh;overflow-y:auto;scrollbar-width:thin;
+  border-radius:24px;border:1px solid rgba(201,162,75,.3);
+  background:linear-gradient(170deg,#0a2140,#071a33);
+  padding:clamp(20px,3vw,36px);
+  box-shadow:0 60px 120px -40px rgba(3,14,30,1);
+  transform:translateY(20px) scale(.985);transition:transform .5s var(--ease);
+}
+.overview.open .ov-panel{transform:none}
+.ov-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:22px}
+.ov-kicker{color:var(--gold-soft);font-size:.82rem;font-weight:700;margin-bottom:6px}
+.ov-head h3{color:#fff;font-size:clamp(1.2rem,2vw,1.7rem);font-weight:800}
+.ov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+.ov-tile{
+  text-align:start;display:flex;flex-direction:column;gap:9px;
+  padding:15px 16px;border-radius:15px;
+  border:1px solid rgba(188,215,245,.16);background:rgba(188,215,245,.04);
+  color:#dfe9f6;transition:all .35s var(--ease);min-height:96px;
+}
+.ov-tile:hover{border-color:var(--gold);transform:translateY(-3px);background:rgba(201,162,75,.09)}
+.ov-tile.is-current{border-color:var(--gold);background:rgba(201,162,75,.14);box-shadow:0 0 24px -6px rgba(201,162,75,.45)}
+.ov-num{font-size:.78rem;font-weight:800;color:var(--gold-soft)}
+.ov-title{font-size:.85rem;font-weight:700;line-height:1.8}
+
+/* ============================================================
+   NOTES (hidden source)
+============================================================ */
+.notes{display:none}
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+@media (max-width:1100px){
+  .split,.split.reverse{grid-template-columns:1fr;gap:26px}
+  .doc-visual,.arch-visual{height:260px;order:2}
+  .g-4{grid-template-columns:repeat(2,1fr)}
+  .g-3{grid-template-columns:repeat(2,1fr)}
+  .toc-grid{grid-template-columns:1fr}
+  .ghost{display:none}
+  .dep-grid{grid-template-columns:1fr}
+  .emblem{opacity:.35}
+  .dia-row{gap:10px}
+}
+@media (max-width:680px){
+  .g-2,.g-3,.g-4{grid-template-columns:1fr}
+  .chrome-brand .btxt{display:none}
+  .counter{min-width:62px;font-size:.85rem}
+  .pipe{flex-direction:column;gap:12px}
+  .pipe-mid{padding:14px}
+  .cover-title{font-size:clamp(1.8rem,8vw,2.6rem)}
+  .gallery{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;scroll-snap-type:x mandatory}
+}
+
+/* ============================================================
+   REDUCED MOTION
+============================================================ */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  [data-reveal]{opacity:1;transform:none}
+  .r-mask .mask-line{transform:none}
+}
+
+/* ============================================================
+   PRINT
+============================================================ */
+@media print{
+  @page{size:landscape;margin:0}
+  body{overflow:visible;background:#fff}
+  .chrome,.progress,.drawer,.overview{display:none!important}
+  .stage{position:static}
+  .slide{
+    position:relative!important;inset:auto!important;opacity:1!important;visibility:visible!important;
+    transform:none!important;pointer-events:auto!important;
+    break-after:page;page-break-after:always;min-height:100vh;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+  }
+  [data-reveal]{opacity:1!important;transform:none!important}
+  .r-mask .mask-line{transform:none!important}
+  .wrap{overflow:visible}
+  .s-bg::after{animation:none}
+}
+
+
+/* ================= آلبوم تصاویر ================= */
+.album-overlay{
+  position:fixed; inset:0; z-index:9999;
+  background:rgba(3,10,20,.94);
+  backdrop-filter:blur(14px);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; visibility:hidden;
+  transition:opacity .35s var(--ease-premium), visibility 0s linear .35s;
+}
+.album-overlay.open{
+  opacity:1; visibility:visible;
+  transition:opacity .35s var(--ease-premium);
+}
+.album-shell{
+  width:min(1200px,96vw); height:min(88vh,92vh);
+  display:flex; flex-direction:column;
+  background:linear-gradient(165deg,#0a2140,#071a33);
+  border:1px solid rgba(201,162,75,.35);
+  border-radius:22px; overflow:hidden;
+  box-shadow:0 60px 120px -40px rgba(3,14,30,1);
+  transform:translateY(18px) scale(.98);
+  transition:transform .45s var(--ease-premium);
+}
+.album-overlay.open .album-shell{ transform:none; }
+
+.album-header{
+  display:flex; align-items:center; gap:18px; flex-wrap:wrap;
+  padding:16px 22px; border-bottom:1px solid rgba(188,215,245,.14);
+}
+.album-title-wrap{ display:flex; align-items:center; gap:12px; flex:1; min-width:200px; }
+.album-badge{
+  font-size:.72rem; font-weight:800; color:var(--gold-soft);
+  padding:5px 12px; border-radius:999px;
+  border:1px solid rgba(201,162,75,.45); background:rgba(201,162,75,.12);
+}
+.album-title{ font-size:1.05rem; font-weight:800; color:#fff; }
+.album-tabs{ display:flex; gap:8px; background:rgba(188,215,245,.06); padding:5px; border-radius:14px; }
+.album-tab{
+  padding:9px 22px; border-radius:10px; font-weight:700; font-size:.9rem;
+  color:#bcd7f5; transition:all .3s var(--ease-premium);
+}
+.album-tab:hover{ color:#fff; }
+.album-tab.is-active{
+  background:linear-gradient(135deg,var(--gold),#a38238); color:#071a33;
+  box-shadow:0 6px 16px -6px rgba(201,162,75,.6);
+}
+.album-close{
+  width:42px; height:42px; border-radius:12px; display:grid; place-items:center;
+  color:#cfe0f4; border:1px solid rgba(188,215,245,.22); transition:all .3s var(--ease-premium);
+}
+.album-close:hover{ border-color:var(--gold); color:var(--gold-soft); transform:rotate(90deg); }
+.album-close svg{ width:17px; height:17px; }
+
+.album-body{
+  flex:1; display:flex; align-items:center; gap:14px;
+  padding:18px 20px; min-height:0;
+}
+.album-nav{
+  flex:none; width:52px; height:52px; border-radius:50%;
+  display:grid; place-items:center; color:#cfe0f4;
+  border:1px solid rgba(188,215,245,.25); background:rgba(188,215,245,.06);
+  transition:all .3s var(--ease-premium);
+}
+.album-nav:hover{ border-color:var(--gold); color:var(--gold-soft); background:rgba(201,162,75,.14); }
+.album-nav svg{ width:22px; height:22px; }
+
+.album-stage{
+  flex:1; min-width:0; height:100%; position:relative;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(255,255,255,.02); border-radius:16px;
+  border:1px solid rgba(188,215,245,.1); overflow:hidden;
+}
+.album-stage img{
+  max-width:100%; max-height:100%; width:auto; height:auto;
+  object-fit:contain; border-radius:10px;
+  box-shadow:0 30px 60px -20px rgba(0,0,0,.6);
+}
+.album-spinner{
+  position:absolute; width:46px; height:46px; border-radius:50%;
+  border:3px solid rgba(188,215,245,.2); border-top-color:var(--gold);
+  animation:albumSpin .8s linear infinite; display:none;
+}
+.album-stage.loading .album-spinner{ display:block; }
+.album-stage.loading img{ opacity:0; }
+@keyframes albumSpin{ to{ transform:rotate(360deg); } }
+.album-error{
+  position:absolute; inset:0; display:none; flex-direction:column;
+  align-items:center; justify-content:center; gap:8px;
+  color:#9db4d1; text-align:center;
+}
+.album-error span{ font-weight:800; font-size:1.05rem; color:#e6cf96; }
+.album-stage.error .album-error{ display:flex; }
+.album-stage.error img{ display:none; }
+
+.album-footer{
+  display:flex; align-items:center; gap:18px;
+  padding:14px 22px; border-top:1px solid rgba(188,215,245,.14);
+}
+.album-counter{ font-weight:800; color:var(--gold-soft); font-size:.95rem; white-space:nowrap; }
+.album-caption{ color:#bcd7f5; font-size:.85rem; font-weight:600; white-space:nowrap; }
+.album-thumbs{
+  flex:1; display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;
+  scrollbar-width:thin; scrollbar-color:rgba(201,162,75,.5) transparent;
+}
+.album-thumbs::-webkit-scrollbar{ height:6px; }
+.album-thumbs::-webkit-scrollbar-thumb{ background:rgba(201,162,75,.4); border-radius:99px; }
+.album-thumb{
+  flex:none; width:44px; height:44px; border-radius:10px; overflow:hidden;
+  border:2px solid transparent; cursor:pointer; padding:0; background:#0b2547;
+  transition:all .25s var(--ease-premium); opacity:.6;
+}
+.album-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+.album-thumb:hover{ opacity:1; transform:translateY(-2px); }
+.album-thumb.is-active{ border-color:var(--gold); opacity:1; box-shadow:0 0 14px -2px rgba(201,162,75,.6); }
+
+@media (max-width:760px){
+  .album-nav{ width:42px; height:42px; }
+  .album-caption{ display:none; }
+}
+
+/* ============================================================
+   لوگوها + بازطراحی صفحه اول
+============================================================ */
+:root{ --ease-premium: cubic-bezier(.22,1,.36,1); }
+
+/* ---------- لوگوهای فوتر (بکگراند سفید گرد) ---------- */
+.brand-logos{display:flex;align-items:center;gap:9px;margin-inline-end:6px}
+.brand-logo{
+  width:42px;height:42px;flex:none;border-radius:12px;background:#fff;
+  display:grid;place-items:center;padding:7px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.28);
+  box-shadow:0 6px 16px -8px rgba(3,14,30,.85);
+  transition:transform .35s var(--ease-premium), box-shadow .35s var(--ease-premium);
+}
+.brand-logo:hover{transform:translateY(-3px);box-shadow:0 12px 24px -8px rgba(3,14,30,.95)}
+.brand-logo img{width:100%;height:100%;object-fit:contain}
+
+/* ---------- صفحه اول: دو ستونه ---------- */
+.slide--cover .wrap{flex-direction:row;align-items:center;justify-content:space-between;gap:clamp(20px,3.5vw,56px)}
+.cover-text{flex:1.12;min-width:0}
+.cover-visual{flex:.88;position:relative;align-self:stretch;display:flex;align-items:center;justify-content:center;padding:1vh 0}
+
+/* ---------- ماکاپ موبایل ---------- */
+.phone{
+  position:relative;width:clamp(215px,21vw,310px);aspect-ratio:9/18.5;
+  border-radius:38px;padding:10px;
+  background:linear-gradient(160deg,#1c2c46,#0a1425);
+  border:1px solid rgba(188,215,245,.28);
+  box-shadow:0 45px 90px -32px rgba(0,0,0,.75), 0 0 70px -12px rgba(47,125,225,.4);
+  transform:rotate(-4deg);
+  transition:transform .6s var(--ease-premium);
+}
+.phone:hover{transform:rotate(0deg) scale(1.02)}
+.phone-notch{position:absolute;top:17px;left:50%;transform:translateX(-50%);width:72px;height:13px;border-radius:99px;background:#0a1425;border:1px solid rgba(188,215,245,.14);z-index:3}
+.phone-glow{position:absolute;inset:-16%;z-index:-1;border-radius:50%;
+  background:radial-gradient(50% 50% at 50% 50%,rgba(47,125,225,.38),transparent 72%);filter:blur(12px)}
+.phone-screen{position:relative;width:100%;height:100%;border-radius:28px;overflow:hidden;background:linear-gradient(170deg,#f2f5fb,#e2e9f4)}
+.phone-screen img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top center}
+.phone-fallback{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;text-align:center;color:#0f4c9c}
+.phone-fallback svg{width:40px;height:40px;opacity:.7}
+.phone-fallback span{font-size:.78rem;font-weight:700;color:#5d6f85;line-height:1.9}
+
+/* ---------- لوگوهای بزرگ صفحه اول ---------- */
+.cover-logo{
+  position:absolute;z-index:5;background:#fff;border-radius:18px;
+  display:grid;place-items:center;padding:12px;
+  box-shadow:0 28px 56px -22px rgba(0,0,0,.78), 0 0 0 1px rgba(201,162,75,.28);
+  animation:logoBob 7s ease-in-out infinite alternate;
+}
+.cover-logo img{width:100%;height:100%;object-fit:contain}
+.logo-tejarat{width:100px;height:128px;top:3%;inset-inline-start:3%}
+.logo-kish{width:146px;height:106px;bottom:5%;inset-inline-end:1%;animation-delay:-3.5s}
+@keyframes logoBob{from{transform:translateY(-7px)}to{transform:translateY(8px)}}
+
+/* ---------- واکنش‌گرا ---------- */
+@media (max-width:1100px){
+  .slide--cover .wrap{flex-direction:column;align-items:flex-start;gap:26px}
+  .cover-visual{width:100%;min-height:360px}
+  .logo-tejarat{inset-inline-start:6%}
+  .logo-kish{inset-inline-end:4%}
+}
+@media (max-width:640px){ .cover-visual{display:none} }
+@media print{ .phone{transform:none;box-shadow:none} .cover-logo{animation:none} }
+
+</style>
+</head>
+<body>
+
+<div class="progress" aria-hidden="true"><span id="pbar"></span></div>
+
+<main class="stage" id="stage" aria-label="ارائه وضعیت پروژه سامانه SMART Banking">
+
+<!-- ================================================================
+     SLIDE 1 — COVER
+================================================================ -->
+<section class="slide slide--dark slide--cover" data-title="جلد؛ وضعیت پروژه سامانه SMART Banking" role="group" aria-roledescription="اسلاید" aria-label="اسلاید ۱ از ۱۵">
+  <div class="s-bg" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <!-- ======= ستون متن ======= -->
+    <div class="cover-text">
+      <div class="cover-orgs" data-reveal>
+        <span class="chip"><span class="dot"></span>بانک تجارت</span>
+        <span class="chip"><span class="dot"></span>شرکت کارت اعتباری ایران کیش</span>
+      </div>
+      <p class="cover-kicker" data-reveal>گزارش وضعیت پروژه سامانه SMART Banking</p>
+      <h1 class="cover-title">
+        <span class="mask r-mask" data-reveal><span class="mask-line">ارائه وضعیت پروژه</span></span>
+        <span class="mask r-mask" data-reveal><span class="mask-line"><span class="gold-txt">سامانه SMART Banking</span></span></span>
+      </h1>
+      <p class="cover-sub" data-reveal>ارائه وضعیت توسعه، قابلیت‌های آماده‌شده و اقدامات پیش‌رو</p>
+    </div>
+
+    <!-- ======= ستون بصری: موبایل + لوگوها ======= -->
+    <div class="cover-visual" data-reveal>
+      <div class="phone">
+        <span class="phone-glow" aria-hidden="true"></span>
+        <span class="phone-notch" aria-hidden="true"></span>
+        <div class="phone-screen">
+          <!-- برای تغییر تصویر جلد، فقط src زیر را عوض کنید -->
+          <img src="../assets/screenshots/بخش لاگین بانکدار - نرم افزار اسمارت/1.jpg" alt="نمای اپلیکیشن اسمارت بانکینگ" onerror="this.style.display='none'">
+          <div class="phone-fallback" aria-hidden="true">
+          </div>
+        </div>
+      </div>
+
+      <div class="cover-logo logo-tejarat">
+        <img src="../assets/logos/tejarat.png" alt="لوگوی بانک تجارت">
+      </div>
+      <div class="cover-logo logo-kish">
+        <img src="../assets/logos/irankish.png" alt="لوگوی شرکت کارت اعتباری ایران کیش">
+      </div>
+    </div>
+  </div>
+
+  <div class="cover-foot" aria-hidden="true"><span class="pulse-dot"></span>گزارش وضعیت پروژه</div>
+  <p class="notes">با سلام و خوش‌آمدگویی به حضار؛ هدف این جلسه، ارائه گزارش شفاف از وضعیت پروژه «سامانه چت اسمارت بانکینگ» است. ابتدا خلاصه وضعیت پروژه، سپس اقدامات انجام‌شده و قابلیت‌های توسعه‌یافته سامانه با نمایش اسکرین‌شات‌ها مرور می‌شود و در پایان، موارد باز و پیش‌نیازهای تکمیل پروژه اعلام خواهد شد.</p>
+</section>
+
+<!-- ================================================================
+     SLIDE 2 — TOC
+================================================================ -->
+<section class="slide slide--light" data-title="فهرست ارائه" role="group" aria-roledescription="اسلاید" aria-label="اسلاید ۲ از ۱۵">
+  <div class="s-bg" aria-hidden="true"></div>
+  <span class="ghost" aria-hidden="true">۰۲</span>
+  <div class="wrap">
+    <header class="shead">
+      <div class="shead-num" data-reveal>۰۲</div>
+      <div>
+        <p class="eyebrow" data-reveal>نقشه راه جلسه</p>
+        <h2 class="stitle" data-reveal>فهرست ارائه</h2>
+        <div class="rule" data-reveal aria-hidden="true"></div>
+      </div>
+    </header>
+    <p class="lead" data-reveal>سرفصل‌های این جلسه به ترتیب زیر ارائه می‌شود:</p>
+    <div class="toc-grid">
+      <div style="display:flex;flex-direction:column">
+        <div class="toc-item" data-reveal><span class="toc-num">۰۱</span><p>خلاصه وضعیت پروژه</p></div>
+        <div class="toc-item" data-reveal><span class="toc-num">۰۲</span><p>تحلیل و مستندسازی نیازمندی‌های محصول</p></div>
+        <div class="toc-item" data-reveal><span class="toc-num">۰۳</span><p>طراحی معماری نرم‌افزار و کاتالوگ سرویس‌ها</p></div>
+        <div class="toc-item" data-reveal><span class="toc-num">۰۴</span><p>زیرسامانه چت SMART Banking و معماری ارتباطی آن</p></div>
+        <div class="toc-item" data-reveal><span class="toc-num">۰۵</span><p>اپلیکیشن بانکدار (Android و PWA)</p></div>
+        <div class="toc-item" data-reveal><span class="toc-num">۰۶</span><p>اپلیکیشن مشتری (Android و PWA)</p></div>
+      </div>
+      <div style="display:flex;flex-direction:column">
+        <div class="toc-item" data-reveal><span class="toc-num">۰۷</span><p>یکپارچه‌سازی با Ticketing شرکت چابک</p></div>
+        <div class="toc-item" data-reveal><span class="toc-num">۰۸</span><p>سرویس‌های پس‌زمینه و هماهنگی ارتباطی (Job، Worker و Handshake)</p></div>
+        <div class="toc-item" data-reveal><span class="toc-num">۰۹</span><p>تست‌های امنیتی، انتشار نسخه‌های آزمایشی و دسترسی کاربران بانک</p></div>
+        <div class="toc-item" data-reveal><span class="toc-num">۱۰</span><p>مستندات و آموزش</p></div>
+        <div class="toc-item" data-reveal><span class="toc-num">۱۱</span><p>موارد باز، پیش‌نیازها و گام‌های بعدی</p></div>
+      </div>
+    </div>
+  </div>
+  <p class="notes">مسیر ارائه را معرفی کنید: ابتدا وضعیت کلی پروژه، سپس بخش‌های فنی و کلاینت‌ها با نمایش اسکرین‌شات‌ها، و در پایان مواردی که برای تکمیل پروژه به تصمیم و همکاری ذی‌نفعان نیاز است.</p>
+</section>
+
+<!-- ================================================================
+     SLIDE 3 — STATUS SUMMARY
+================================================================ -->
+<section class="slide slide--dark" data-title="خلاصه وضعیت پروژه" role="group" aria-roledescription="اسلاید" aria-label="اسلاید ۳ از ۱۵">
+  <div class="s-bg" aria-hidden="true"></div>
+  <span class="ghost" aria-hidden="true">۰۳</span>
+  <div class="wrap">
+    <header class="shead">
+      <div class="shead-num" data-reveal>۰۳</div>
+      <div>
+        <p class="eyebrow" data-reveal>نمای کلی</p>
+        <h2 class="stitle" data-reveal>خلاصه وضعیت پروژه</h2>
+        <div class="rule" data-reveal aria-hidden="true"></div>
+      </div>
+    </header>
+    <p class="lead" data-reveal>سامانه SMART Banking به‌عنوان پلتفرم ارتباطی میان مشتری و بانکدار توسط شرکت کارت اعتباری ایران کیش برای بانک تجارت در حال توسعه است. نمای کلی وضعیت کنونی پروژه:</p>
+    <div class="bands">
+      <div class="band band--done" data-reveal>
+        <span class="band-tag">انجام‌شده</span>
+        <div>
+          <p>با توجه به اقدامات انجام‌شده، بخش عمده تحلیل، طراحی معماری، توسعه Backend، توسعه کلاینت‌های بانکدار و مشتری، زیرسامانه چت، یکپارچه‌سازی اولیه با Ticketing، مکانیزم‌های تخصیص، سرویس‌های ارتباطی، تست‌های امنیتی و مستندسازی پروژه انجام شده و نسخه قابل ارزیابی سامانه نیز در اختیار بانک و کاربران منتخب قرار گرفته است.</p>
+        </div>
+      </div>
+      <div class="band band--open" data-reveal>
+        <span class="band-tag">باقی‌مانده</span>
+        <div>
+          <p>موارد باقی‌مانده عمدتاً وابسته به دریافت سرویس‌ها و اطلاعات تکمیلی از سایر ذی‌نفعان، تعیین تکلیف نفرساعت پروژه و تحویل زیرساخت عملیاتی از سوی بانک است.</p>
+        </div>
+      </div>
+      <div class="band band--next" data-reveal>
+        <span class="band-tag">پس از تأمین پیش‌نیازها</span>
+        <div>
+          <p>پس از تأمین این پیش‌نیازها، فرآیند آماده‌سازی نهایی، بهینه‌سازی، استقرار و بهره‌برداری عملیاتی سامانه قابل انجام خواهد بود.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="notes">این اسلاید دید کلی می‌دهد که پروژه در چه وضعیتی است: بخش عمده توسعه تکمیل شده، نسخه قابل ارزیابی در اختیار بانک و کاربران منتخب قرار گرفته و موارد باقی‌مانده عمدتاً به تصمیم‌گیری ذی‌نفعان و تأمین پیش‌نیازها (سرویس‌ها، تأیید نفرساعت و زیرساخت عملیاتی) وابسته است.</p>
+</section>
+
+<!-- ================================================================
+     SLIDE 4 — REQUIREMENTS
+================================================================ -->
+<section class="slide slide--light" data-title="تحلیل و مستندسازی نیازمندی‌های محصول" role="group" aria-roledescription="اسلاید" aria-label="اسلاید ۴ از ۱۵">
+  <div class="s-bg" aria-hidden="true"></div>
+  <span class="ghost" aria-hidden="true">۰۴</span>
+  <div class="wrap">
+    <header class="shead">
+      <div class="shead-num" data-reveal>۰۴</div>
+      <div>
+        <p class="eyebrow" data-reveal>گام نخست توسعه</p>
+        <h2 class="stitle" data-reveal>تحلیل و مستندسازی نیازمندی‌های محصول</h2>
+        <div class="rule" data-reveal aria-hidden="true"></div>
+      </div>
+    </header>
+    <div class="split">
+      <div>
+        <p class="lead" data-reveal>نیازمندی‌های سامانه نخستین گام و مبنای تمام مراحل طراحی و توسعه بوده است:</p>
+        <ul class="bullets">
+          <li data-reveal>
+            <span class="b-ico"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></svg></span>
+            <p>نیازمندی‌های <b>کسب‌وکاری و فنی</b> سامانه با مشارکت ذی‌نفعان بررسی، تحلیل و مستندسازی شده است.</p>
+          </li>
+          <li data-reveal>
+            <span class="b-ico"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h8l4 4v14H7z"/><path d="M15 3v4h4"/><path d="M10 12h6M10 16h6"/></svg></span>
+            <p>این نیازمندی‌ها <b>مبنای طراحی و توسعه</b> بخش‌های مختلف سامانه قرار گرفته است.</p>
+          </li>
+        </ul>
+      </div>
+      <div class="doc-visual" data-reveal aria-hidden="true">
+        <div class="doc-card d1"><span class="ln h"></span><span class="ln"></span><span class="ln"></span><span class="ln g"></span><span class="ln" style="width:58%"></span></div>
+        <div class="doc-card d2"><span class="ln h"></span><span class="ln"></span><span class="ln g"></span><span class="ln"></span><span class="ln" style="width:70%"></span><span class="ln" style="width:44%"></span></div>
+        <div class="doc-lens"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 12h10M4 18h13"/></svg></div>
+        <span class="float-tag t1">نیازمندی‌های کسب‌وکاری</span>
+        <span class="float-tag t2">نیازمندی‌های فنی</span>
+      </div>
+    </div>
+  </div>
+  <p class="notes">تأکید کنید توسعه سامانه بر پایه نیازمندی‌های مستند و استخراج‌شده با مشارکت ذی‌نفعان انجام شده و این مستندات مبنای طراحی و توسعه همه بخش‌ها بوده است؛ یعنی توسعه بدون مبنا و بر اساس فرض انجام نشده است.</p>
+</section>
+
+<!-- ================================================================
+     SLIDE 5 — ARCHITECTURE & SERVICE CATALOG
+================================================================ -->
+<section class="slide slide--light" data-title="طراحی معماری نرم‌افزار و کاتالوگ سرویس‌ها" role="group" aria-roledescription="اسلاید" aria-label="اسلاید ۵ از ۱۵">
+  <div class="s-bg" aria-hidden="true"></div>
+  <span class="ghost" aria-hidden="true">۰۵</span>
+  <div class="wrap">
+    <header class="shead">
+      <div class="shead-num" data-reveal>۰۵</div>
+      <div>
+        <p class="eyebrow" data-reveal>زیربنای فنی</p>
+        <h2 class="stitle" data-reveal>طراحی معماری نرم‌افزار و کاتالوگ سرویس‌ها</h2>
+        <div class="rule" data-reveal aria-hidden="true"></div>
+      </div>
+    </header>
+    <div class="split reverse">
+      <div class="arch-visual" data-reveal aria-hidden="true">
+        <div class="arch-stack">
+          <div class="arch-plane p1"><span class="pv"></span>الزامات فنی</div>
+          <div class="arch-plane p2"><span class="pv"></span>الزامات امنیتی</div>
+          <div class="arch-plane p3"><span class="pv"></span>الزامات زیرساختی بانک</div>
+        </div>
+        <span class="arch-node n1"></span>
+        <span class="arch-node n2"></span>
+      </div>
+      <div>
+        <p class="lead" data-reveal>زیرساخت فنی سامانه با در نظر گرفتن ملاحظات بانکی طراحی و مستندسازی شده است:</p>
+        <ul class="bullets">
+          <li data-reveal>
+            <span class="b-ico"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4-9 4z"/><path d="M3 12l9 4 9-4"/><path d="M3 17l9 4 9-4"/></svg></span>
+            <p><b>معماری فنی سامانه و کاتالوگ سرویس‌های</b> موردنیاز بخش‌های مختلف، با در نظر گرفتن الزامات فنی، امنیتی و زیرساختی بانک طراحی و مستندسازی شده است.</p>
+          </li>
+          <li data-reveal>
+            <span class="b-ico"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></span>
+            <p>مستندات معماری و کاتالوگ سرویس‌ها <b>جهت بررسی و تأیید ذی‌نفعان</b> ارائه شده است.</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <p class="notes">توضیح دهید که معماری فنی سامانه و کاتالوگ سرویس‌ها با توجه به الزامات فنی، امنیتی و زیرساختی بانک تهیه و مستندسازی شده و برای بررسی و تأیید به ذی‌نفعان ارائه شده است.</p>
+</section>
+
+<!-- ================================================================
+     SLIDE 6 — CHAT SUBSYSTEM CAPABILITIES
+================================================================ -->
+<section class="slide slide--light" data-title="زیرسامانه چت؛ قابلیت‌های اصلی" role="group" aria-roledescription="اسلاید" aria-label="اسلاید ۶ از ۱۵">
+  <div class="s-bg" aria-hidden="true"></div>
+  <span class="ghost" aria-hidden="true">۰۶</span>
+  <div class="wrap">
+    <header class="shead">
+      <div class="shead-num" data-reveal>۰۶</div>
+      <div>
+        <p class="eyebrow" data-reveal>قلب سامانه</p>
+        <h2 class="stitle" data-reveal>زیرسامانه چت SMART Banking؛ قابلیت‌های اصلی</h2>
+        <div class="rule" data-reveal aria-hidden="true"></div>
+      </div>
+    </header>
+    <p class="lead" data-reveal>زیرسامانه چت به‌عنوان یکی از بخش‌های اصلی و زیرساختی پروژه، با توجه ویژه به الزامات امنیتی، محدودیت‌های شبکه بانکی، پایداری ارتباطات و قابلیت استفاده در مقیاس عملیاتی طراحی و پیاده‌سازی شده است. قابلیت‌های پیاده‌سازی‌شده در این بخش:</p>
+    <div class="card-grid g-3">
+      <div class="card" data-reveal>
+        <span class="c-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5c-1.5 0-3-.4-4.2-1.1L3 20l1.2-4.9A8.5 8.5 0 1 1 21 11.5z"/><path d="M8.5 10.5h7M8.5 13.5h4.5"/></svg></span>
+        <h3>مدیریت چرخه مکالمات</h3>
+        <p>مدیریت چرخه مکالمات میان مشتری و بانکدار.</p>
+      </div>
+      <div class="card" data-reveal>
+        <span class="c-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg></span>
+        <h3>ارسال و دریافت پیام</h3>
+        <p>ارسال و دریافت پیام.</p>
+      </div>
+      <div class="card" data-reveal>
+        <span class="c-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M10.3 21a2 2 0 0 0 3.4 0"/></svg></span>
+        <h3>وضعیت پیام‌ها</h3>
+        <p>مدیریت وضعیت پیام‌ها و پیام‌های خوانده‌نشده.</p>
+      </div>
+      <div class="card" data-reveal>
+        <span class="c-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6"/></svg></span>
+        <h3>مدیریت فایل‌ها</h3>
+        <p>مدیریت فایل‌ها و مستندات ارسالی.</p>
+      </div>
+      <div class="card" data-reveal>
+        <span class="c-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14.5v3"/></svg></span>
+        <h3>کنترل دسترسی</h3>
+        <p>کنترل دسترسی کاربران به مکالمات.</p>
+      </div>
+      <div class="card" data-reveal>
+        <span class="c-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3.2"/><circle cx="17" cy="9" r="2.6"/><path d="M2.5 20c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><path d="M15.5 20c.4-2.3 1.7-3.8 3.6-4.2"/></svg></span>
+        <h3>تخصیص مشتری به بانکدار</h3>
+        <p>مدیریت تخصیص مشتری به بانکدار و سازوکارهای لازم برای به‌روزرسانی اطلاعات مکالمات.</p>
+      </div>
+    </div>
+  </div>
+  <p class="notes">این بخش قلب سامانه است؛ تأکید کنید چرخه کامل مکالمات مشتری و بانکدار — شامل مدیریت مکالمات، ارسال و دریافت پیام، وضعیت خوانده‌نشده، مدیریت فایل‌ها، کنترل دسترسی و تخصیص مشتری به بانکدار — به‌صورت عملیاتی و قابل استفاده طراحی و پیاده‌سازی شده است.</p>
+</section>
+
+<!-- ================================================================
+     SLIDE 7 — COMMUNICATION ARCHITECTURE (dark)
+================================================================ -->
+<section class="slide slide--dark" data-title="معماری ارتباطی چت و ملاحظات امنیتی" role="group" aria-roledescription="اسلاید" aria-label="اسلاید ۷ از ۱۵">
+  <div class="s-bg" aria-hidden="true"></div>
+  <span class="ghost" aria-hidden="true">۰۷</span>
+  <div class="wrap">
+    <header class="shead">
+      <div class="shead-num" data-reveal>۰۷</div>
+      <div>
+        <p class="eyebrow" data-reveal>فناوری و امنیت</p>
+        <h2 class="stitle" data-reveal>معماری ارتباطی چت و ملاحظات امنیتی</h2>
+        <div class="rule" data-reveal aria-hidden="true"></div>
+      </div>
+    </header>
+    <p class="lead" data-reveal>به‌منظور تطابق با محدودیت‌های زیرساختی و امنیتی بانک، معماری ارتباطی زیرسامانه چت به‌گونه‌ای طراحی شده است که به کانال‌های ارتباطی دائمی وابسته نباشد:</p>
+    <ul class="bullets" style="margin-bottom:clamp(12px,2vh,20px)">
+      <li data-reveal>
+        <span class="b-ico"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="m5.5 5.5 13 13"/></svg></span>
+        <p>معماری ارتباطی این بخش <b>بدون وابستگی به WebSocket و کانال‌های ارتباطی دائمی</b> طراحی شده است.</p>
+      </li>
+      <li data-reveal>
+        <span class="b-ico"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16"/><path d="M14 6l6 6-6 6"/><path d="M10 6 4 12l6 6"/></svg></span>
+        <p>ارتباطات بر پایه <b>ارتباطات استاندارد HTTP، مکانیزم Long Polling، کنترل تغییرات و همگام‌سازی اطلاعات</b> انجام می‌شود.</p>
+      </li>
+      <li data-reveal>
+        <span class="b-ico"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></span>
+        <p>این رویکرد ضمن کاهش وابستگی به کانال‌های دائمی، <b>امکان کنترل بهتر ارتباطات در لایه‌های شبکه، WAF، Proxy و Load Balancer</b> را فراهم می‌کند.</p>
+      </li>
+    </ul>
+    <div class="diagram" data-reveal>
+      <div class="dia-row">
+        <div class="dia-node n-client">
+          <svg class="dn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg>
+          <span>کلاینت‌های چت</span><small>مشتری و بانکدار</small>
+        </div>
+        <div class="dia-link" aria-hidden="true"></div>
+        <div class="dia-node">
+          <svg class="dn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>
+          <span>WAF</span><small>لایه امنیت</small>
+        </div>
+        <div class="dia-link" aria-hidden="true"></div>
+        <div class="dia-node">
+          <svg class="dn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/></svg>
+          <span>Proxy</span><small>لایه شبکه</small>
+        </div>
+        <div class="dia-link" aria-hidden="true"></div>
+        <div class="dia-node">
+          <svg class="dn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v5"/><circle cx="12" cy="10" r="2"/><path d="M12 12v3"/><path d="M5 19a7 7 0 0 1 14 0"/><circle cx="5" cy="19.5" r="1.7"/><circle cx="19" cy="19.5" r="1.7"/></svg>
+          <span>Load Balancer</span><small>توزیع بار</small>
+        </div>
+        <div class="dia-link" aria-hidden="true"></div>
+        <div class="dia-node n-core">
+          <svg class="dn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/></svg>
+          <span>سرویس چت</span><small>HTTP / Long Polling</small>
+        </div>
+      </div>
+      <div class="dia-cap">
+        <span class="dia-badge gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/><circle cx="12" cy="12" r="9.2"/></svg>بدون وابستگی به WebSocket</span>
+        <span class="dia-badge">کنترل تغییرات و همگام‌سازی اطلاعات</span>
+        <span class="dia-badge">کنترل‌پذیر در لایه‌های شبکه بانک</span>
+      </div>
+    </div>
+  </div>
+  <p class="notes">این اسلاید برای ذی‌نفعان فنی و امنیتی بانک اهمیت ویژه‌ای دارد؛ تأکید کنید معماری ارتباطی چت بدون وابستگی به WebSocket و کانال‌های دائمی و بر پایه HTTP و Long Polling طراحی شده تا امکان کنترل در لایه‌های شبکه، WAF، Proxy و Load Balancer فراهم باشد.</p>
+</section>
+
+<!-- ================================================================
+     SLIDE 8 — BANKER APP PART 1
+================================================================ -->
+<section class="slide slide--light" data-title="اپلیکیشن بانکدار (بخش اول)" role="group" aria-roledescription="اسلاید" aria-label="اسلاید ۸ از ۱۵">
+  <div class="s-bg" aria-hidden="true"></div>
+  <span class="ghost" aria-hidden="true">۰۸</span>
+  <div class="wrap">
+    <header class="shead">
+      <div class="shead-num" data-reveal>۰۸</div>
+      <div>
+        <p class="eyebrow" data-reveal>کلاینت بانکدار — Android و PWA</p>
+        <h2 class="stitle" data-reveal>اپلیکیشن بانکدار (بخش اول)</h2>
+        <div class="rule" data-reveal aria-hidden="true"></div>
+      </div>
+    </header>
+    <ul class="bullets g-2 card-grid" style="margin-bottom:clamp(14px,2.4vh,24px)">
+      <li data-reveal>
+        <span class="b-ico"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg></span>
+        <p>نسخه‌های <b>Android و PWA</b> اپلیکیشن بانکدار توسعه یافته‌اند.</p>
+      </li>
+      <li data-reveal>
+        <span class="b-ico"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="3.4"/><path d="M5 20c.8-3.6 3.5-5.6 7-5.6s6.2 2 7 5.6"/></svg></span>
+        <p>فرآیندهای عملیاتی بانکدار در توسعه اپلیکیشن در نظر گرفته شده است.</p>
+      </li>
+      <li data-reveal>
+        <span class="b-ico"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5c-1.5 0-3-.4-4.2-1.1L3 20l1.2-4.9A8.5 8.5 0 1 1 21 11.5z"/></svg></span>
+        <p>دسترسی به مشتریان تخصیص‌یافته و مدیریت مکالمات پیاده‌سازی شده است.</p>
+      </li>
+      <li data-reveal>
+        <span class="b-ico"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></span>
+        <p>اپلیکیشن بانکدار <b>آماده استفاده آزمایشی</b> است.</p>
+      </li>
+    </ul>
+    <!-- محل قرارگیری تصاویر: در هر shot-screen تگ <img> با مسیر اصلی فایل‌ها درج شود -->
+    <div class="gallery scroll-x">
+      <figure class="shot" data-reveal>
+        <div class="shot-frame"><div class="shot-screen">
+          <div class="shot-fallback"><div class="ph-zone">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 20"/></svg>
+            <span><img src="../assets/screenshots/بخش بانکدار - نرم افزار اسمارت/1.jpg" alt="نمونه صفحه از اپلیکیشن بانکدار — ۱"></span>
+          </div></div>
+        </div></div>
+      </figure>
+      <figure class="shot" data-reveal>
+        <div class="shot-frame"><div class="shot-screen">
+          <div class="shot-fallback"><div class="ph-zone">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 20"/></svg>
+            <span><img src="../assets/screenshots/بخش بانکدار - نرم افزار اسمارت/2.jpg" alt="نمونه صفحه از اپلیکیشن بانکدار — ۱"></span>
+          </div></div>
+        </div></div>
+      </figure>
+      <figure class="shot" data-reveal>
+        <div class="shot-frame"><div class="shot-screen">
+          <div class="shot-fallback"><div class="ph-zone">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 20"/></svg>
+            <span><img src="../assets/screenshots/بخش بانکدار - نرم افزار اسمارت/3.jpg" alt="نمونه صفحه از اپلیکیشن بانکدار — ۱"></span>
+          </div></div>
+        </div></div>
+      </figure>
+      <figure class="shot" data-reveal>
+        <div class="shot-frame"><div class="shot-screen">
+          <div class="shot-fallback"><div class="ph-zone">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 20"/></svg>
+            <span><img src="../assets/screenshots/بخش بانکدار - نرم افزار اسمارت/4.jpg" alt="نمونه صفحه از اپلیکیشن بانکدار — ۱"></span>
+          </div></div>
+        </div></div>
+      </figure>
+      <figure class="shot" data-reveal>
+        <div class="shot-frame"><div class="shot-screen">
+          <div class="shot-fallback"><div class="ph-zone">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 20"/></svg>
+            <span><img src="../assets/screenshots/بخش بانکدار - نرم افزار اسمارت/5.jpg" alt="نمونه صفحه از اپلیکیشن بانکدار — ۱"></span>
+          </div></div>
+        </div></div>
+      </figure>
+    </div>
+  </div>
+  <p class="notes">اپلیکیشن بانکدار در نسخه‌های Android و PWA و بر اساس فرآیندهای عملیاتی توسعه یافته است؛ دسترسی به مشتریان تخصیص‌یافته و مدیریت مکالمات از قابلیت‌های اصلی آن است و برای استفاده آزمایشی آماده است. نمونه‌هایی از صفحات اپلیکیشن در این اسلاید نمایش داده می‌شود.</p>
+</section>
+
+<!-- ================================================================
+     SLIDE 9 — BANKER APP PART 2
+================================================================ -->
+<section class="slide slide--light" data-title="اپلیکیشن بانکدار (بخش دوم)" role="group" aria-roledescription="اسلاید" aria-label="اسلاید ۹ از ۱۵">
+  <div class="s-bg" aria-hidden="true"></div>
+  <span class="ghost" aria-hidden="true">۰۹</span>
+  <div class="wrap">
+    <header class="shead">
+      <div class="shead-num" data-reveal>۰۹</div>
+      <div>
+        <p class="eyebrow" data-reveal>کلاینت بانکدار — ادامه</p>
+        <h2 class="stitle" data-reveal>اپلیکیشن بانکدار (بخش دوم)</h2>
+        <div class="rule" data-reveal aria-hidden="true"></div>
+      </div>
+    </header>
+    <p class="lead" data-reveal>ادامه نمونه صفحات اپلیکیشن بانکدار؛ سایر قابلیت‌های موردنیاز بانکدار نیز در این اپلیکیشن توسعه یافته است:</p>
+    <ul class="bullets g-2 card-grid" style="margin-bottom:clamp(14px,2.4vh,24px)">
+      <li data-reveal>
+        <span class="b-ico"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/></svg></span>
+        <p>سایر قابلیت‌های موردنیاز بانکدار با در نظر گرفتن فرآیندهای عملیاتی توسعه یافته است.</p>
+      </li>
+      <li data-reveal>
+        <span class="b-ico"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 3.5 20.5 9.5 9 21H3v-6z"/><path d="m12.5 5.5 6 6"/></svg></span>
+        <p>اپلیکیشن بانکدار برای انجام <b>تست‌های فنی و کاربری</b> آماده است.</p>
+      </li>
+    </ul>
+    <!-- محل قرارگیری تصاویر: در هر shot-screen تگ <img> با مسیر اصلی فایل‌ها درج شود -->
+    <div class="gallery scroll-x">
+      <figure class="shot" data-reveal>
+        <div class="shot-frame"><div class="shot-screen">
+          <div class="shot-fallback"><div class="ph-zone">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 20"/></svg>
+            <span><img src="../assets/screenshots/بخش بانکدار - نرم افزار اسمارت/7.jpg" alt="نمونه صفحه از اپلیکیشن بانکدار — ۷"></span>
+          </div></div>
+        </div></div>
+      </figure>
+      <figure class="shot" data-reveal>
+        <div class="shot-frame"><div class="shot-screen">
+          <div class="shot-fallback"><div class="ph-zone">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 20"/></svg>
+            <span><img src="../assets/screenshots/بخش بانکدار - نرم افزار اسمارت/8.jpg" alt="نمونه صفحه از اپلیکیشن بانکدار — ۷"></span>
+          </div></div>
+        </div></div>
+      </figure>
+      <figure class="shot" data-reveal>
+        <div class="shot-frame"><div class="shot-screen">
+          <div class="shot-fallback"><div class="ph-zone">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 20"/></svg>
+            <span><img src="../assets/screenshots/بخش بانکدار - نرم افزار اسمارت/9.jpg" alt="نمونه صفحه از اپلیکیشن بانکدار — ۷"></span>
+          </div></div>
+        </div></div>
+      </figure>
+      <figure class="shot" data-reveal>
+        <div class="shot-frame"><div class="shot-screen">
+          <div class="shot-fallback"><div class="ph-zone">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 20"/></svg>
+            <span><img src="../assets/screenshots/بخش بانکدار - نرم افزار اسمارت/10.jpg" alt="نمونه صفحه از اپلیکیشن بانکدار — ۷"></span>
+          </div></div>
+        </div></div>
+      </figure>
+      <figure class="shot" data-reveal>
+        <div class="shot-frame"><div class="shot-screen">
+          <div class="shot-fallback"><div class="ph-zone">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 20"/></svg>
+            <span><img src="../assets/screenshots/بخش بانکدار - نرم افزار اسمارت/11.jpg" alt="نمونه صفحه از اپلیکیشن بانکدار — ۷"></span>
+          </div></div>
+        </div></div>
+      </figure>
+    </div>
+  </div>
+  <p class="notes">ادامه اسکرین‌شات‌های اپلیکیشن بانکدار را نمایش دهید و اشاره کنید که سایر قابلیت‌های موردنیاز بانکدار نیز توسعه یافته و اپلیکیشن برای انجام تست‌های فنی و کاربری آماده است.</p>
+</section>
+
+<!-- ================================================================
+     SLIDE 10 — CUSTOMER APP
+================================================================ -->
+<section class="slide slide--light" data-title="اپلیکیشن مشتری" role="group" aria-roledescription="اسلاید" aria-label="اسلاید ۱۰ از ۱۵">
+  <div class="s-bg" aria-hidden="true"></div>
+  <span class="ghost" aria-hidden="true">۱۰</span>
+  <div class="wrap">
+    <header class="shead">
+      <div class="shead-num" data-reveal>۱۰</div>
+      <div>
+        <p class="eyebrow" data-reveal>تکمیل چرخه ارتباط</p>
+        <h2 class="stitle" data-reveal>اپلیکیشن مشتری</h2>
+        <div class="rule" data-reveal aria-hidden="true"></div>
+      </div>
+    </header>
+    <div class="split">
+      <div>
+        <p class="lead" data-reveal>اپلیکیشن مشتری با هدف تکمیل چرخه سرویس و امکان انجام تست‌های End-to-End توسعه یافته است:</p>
+        <ul class="bullets">
+          <li data-reveal>
+            <span class="b-ico"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg></span>
+            <p>نسخه‌های <b>Android و PWA</b> سمت مشتری توسعه یافته‌اند.</p>
+          </li>
+          <li data-reveal>
+            <span class="b-ico"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v4h-4"/></svg></span>
+            <p>با توسعه این نسخه، <b>چرخه کامل ارتباط مشتری و بانکدار تکمیل شده</b> و امکان انجام تست‌های End-to-End فراهم شده است.</p>
+          </li>
+          <li data-reveal>
+            <span class="b-ico"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <p>دسترسی به خدمات پیش‌بینی‌شده در پروژه برای مشتری فراهم شده است.</p>
+          </li>
+        </ul>
+      </div>
+      <!-- محل قرارگیری تصاویر: در هر shot-screen تگ <img> با مسیر اصلی فایل‌ها درج شود -->
+      <div class="gallery" style="justify-content:center">
+        <figure class="shot" data-reveal>
+          <div class="shot-frame"><div class="shot-screen">
+            <div class="shot-fallback"><div class="ph-zone">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 20"/></svg>
+              <span><img src="../assets/screenshots/بخش مشتری - نرم افزار اسمارت/3.jpg" alt="نمونه صفحه از اپلیکیشن مشتری — ۱"></span>
+            </div></div>
+          </div></div>
+        </figure>
+        <figure class="shot" data-reveal>
+          <div class="shot-frame"><div class="shot-screen">
+            <div class="shot-fallback"><div class="ph-zone">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L7 20"/></svg>
+              <span><img src="../assets/screenshots/بخش مشتری - نرم افزار اسمارت/4.jpg" alt="نمونه صفحه از اپلیکیشن مشتری — ۱"></f</span>
+            </div></div>
+          </div></div>
+        </figure>
+      </div>
+    </div>
+  </div>
+  <p class="notes">با توسعه اپلیکیشن مشتری در نسخه‌های Android و PWA، چرخه ارتباط مشتری و بانکدار تکمیل شده و امکان انجام تست‌های End-to-End فراهم شده است؛ مشتری به خدمات پیش‌بینی‌شده در پروژه دسترسی دارد.</p>
+</section>
+
+<!-- ================================================================
+     SLIDE 11 — TICKETING INTEGRATION
+================================================================ -->
+<section class="slide slide--light" data-title="یکپارچه‌سازی با Ticketing شرکت چابک" role="group" aria-roledescription="اسلاید" aria-label="اسلاید ۱۱ از ۱۵">
+  <div class="s-bg" aria-hidden="true"></div>
+  <span class="ghost" aria-hidden="true">۱۱</span>
+  <div class="wrap">
+    <header class="shead">
+      <div class="shead-num" data-reveal>۱۱</div>
+      <div>
+        <p class="eyebrow" data-reveal>یکپارچه‌سازی</p>
+        <h2 class="stitle" data-reveal>یکپارچه‌سازی با Ticketing شرکت چابک</h2>
+        <div class="rule" data-reveal aria-hidden="true"></div>
+      </div>
+    </header>
+    <p class="lead" data-reveal>وضعیت یکپارچه‌سازی سامانه با زیرساخت Ticketing شرکت چابک:</p>
+    <ul class="bullets" style="margin-bottom:clamp(14px,2.4vh,24px)">
+      <li data-reveal>
+        <span class="b-ico"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></span>
+        <p><b>بخش عمده سرویس‌های موردنیاز</b> جهت یکپارچه‌سازی سامانه با زیرساخت Ticketing شرکت چابک در اپلیکیشن پیاده‌سازی و در فرآیندهای مرتبط مورد استفاده قرار گرفته است.</p>
+      </li>
+      <li data-reveal>
+        <span class="b-ico" style="color:#8a6a1f;background:rgba(201,162,75,.14);border-color:rgba(201,162,75,.4)"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
+        <p>بخشی از فرآیند، مرتبط با <b>دریافت و نمایش پاسخ نهایی تیکت</b>، همچنان نیازمند تکمیل سرویس مربوطه از سمت شرکت چابک است.</p>
+      </li>
+    </ul>
+    <div class="pipe" data-reveal>
+      <div class="pipe-end sys">
+        <svg class="pe-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/></svg>
+        <h4>سامانه چت SMART Banking</h4>
+        <small>سرویس‌های یکپارچه‌سازی پیاده‌سازی‌شده</small>
+      </div>
+      <div class="pipe-mid" aria-hidden="true">
+        <span class="pipe-gap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>پاسخ نهایی تیکت — نیازمند تکمیل سرویس از سمت چابک</span>
+        <div class="pipe-line"></div>
+      </div>
+      <div class="pipe-end chabok">
+        <svg class="pe-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13l-2-3H6z"/><path d="M4 8v10a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V8"/><path d="M17 11h4l-1 3h-3"/></svg>
+        <h4>Ticketing شرکت چابک</h4>
+        <small>زیرساخت تیکتینگ</small>
+      </div>
+    </div>
+  </div>
+  <p class="notes">اعلام کنید بخش عمده سرویس‌های یکپارچه‌سازی با Ticketing چابک پیاده‌سازی و در فرآیندهای مرتبط استفاده شده است؛ اما تکمیل چرخه Ticketing (دریافت و نمایش پاسخ نهایی تیکت) به تکمیل سرویس از سمت شرکت چابک وابسته است که در اسلاید موارد باز نیز اشاره خواهد شد.</p>
+</section>
+
+<!-- ================================================================
+     SLIDE 12 — BACKGROUND SERVICES
+================================================================ -->
+<section class="slide slide--light" data-title="سرویس‌های پس‌زمینه و هماهنگی ارتباطی" role="group" aria-roledescription="اسلاید" aria-label="اسلاید ۱۲ از ۱۵">
+  <div class="s-bg" aria-hidden="true"></div>
+  <span class="ghost" aria-hidden="true">۱۲</span>
+  <div class="wrap">
+    <header class="shead">
+      <div class="shead-num" data-reveal>۱۲</div>
+      <div>
+        <p class="eyebrow" data-reveal>زیرساخت پردازش و ارتباط</p>
+        <h2 class="stitle" data-reveal>سرویس‌های پس‌زمینه و هماهنگی ارتباطی</h2>
+        <div class="rule" data-reveal aria-hidden="true"></div>
+      </div>
+    </header>
+    <p class="lead" data-reveal>زیرساخت پردازشی و ارتباطی سامانه برای عملیات و همگام‌سازی تغییرات آماده‌سازی شده است:</p>
+    <div class="card-grid g-4">
+      <div class="card" data-reveal>
+        <span class="c-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.01a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55h.01a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.01a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></svg></span>
+        <h3>Job و Worker</h3>
+        <p>Jobها و Workerهای موردنیاز جهت انجام پردازش‌های پس‌زمینه و مدیریت فرآیندهای سیستمی طراحی و پیاده‌سازی شده‌اند.</p>
+      </div>
+      <div class="card" data-reveal>
+        <span class="c-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="8" r="3"/><path d="M2.5 19.5c.6-3 2.5-4.7 4.5-4.7s3.9 1.7 4.5 4.7"/><path d="M14.5 8h6"/><path d="m18 5 3 3-3 3"/></svg></span>
+        <h3>تخصیص خودکار</h3>
+        <p>انتقال و اعمال خودکار تخصیص مشتریان به بانکداران پیاده‌سازی شده است.</p>
+      </div>
+      <div class="card" data-reveal>
+        <span class="c-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 14.5 14.5 9.5"/><path d="M7 17a4 4 0 0 1 0-5.7l2-2"/><path d="M17 7a4 4 0 0 1 0 5.7l-2 2"/></svg></span>
+        <h3>Handshake با همراه‌بانک</h3>
+        <p>سرویس‌ها و مکانیزم‌های موردنیاز جهت برقراری Handshake، اعلام تغییرات و هماهنگی فرآیندهای ارتباطی با همراه‌بانک طراحی و پیاده‌سازی شده‌اند.</p>
+      </div>
+      <div class="card" data-reveal>
+        <span class="c-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M12 8.5a2.5 2.5 0 0 1 2.5 2.5c0 2-2.5 2.5-2.5 4"/><path d="M12 17.5h.01"/></svg></span>
+        <h3>آگاهی کنترل‌شده</h3>
+        <p>فرآیند تبادل اطلاعات و آگاهی کلاینت از تغییرات سامانه به‌صورت کنترل‌شده انجام می‌شود.</p>
+      </div>
+    </div>
+  </div>
+  <p class="notes">این بخش نشان می‌دهد زیرساخت پردازشی و ارتباطی سامانه برای عملیات آماده شده است: پردازش‌های پس‌زمینه (Job و Worker)، تخصیص خودکار مشتریان به بانکداران، مکانیزم Handshake و اعلام تغییرات به همراه‌بانک، به‌گونه‌ای که کلاینت به‌صورت کنترل‌شده از تغییرات سامانه آگاه شود.</p>
+</section>
+
+<!-- ================================================================
+     SLIDE 13 — SECURITY, PILOT & ACCESS
+================================================================ -->
+<section class="slide slide--light" data-title="تست‌های امنیتی، انتشار آزمایشی و دسترسی کاربران" role="group" aria-roledescription="اسلاید" aria-label="اسلاید ۱۳ از ۱۵">
+  <div class="s-bg" aria-hidden="true"></div>
+  <span class="ghost" aria-hidden="true">۱۳</span>
+  <div class="wrap">
+    <header class="shead">
+      <div class="shead-num" data-reveal>۱۳</div>
+      <div>
+        <p class="eyebrow" data-reveal>فاز ارزیابی</p>
+        <h2 class="stitle" data-reveal>تست‌های امنیتی، انتشار آزمایشی و دسترسی کاربران</h2>
+        <div class="rule" data-reveal aria-hidden="true"></div>
+      </div>
+    </header>
+    <p class="lead" data-reveal>سامانه از نظر امنیتی و کاربری وارد فاز ارزیابی شده است؛ تصاویر زیر نمونه صفحات ورود اپلیکیشن بانکدار است:</p>
+    <div class="split" style="grid-template-columns:1.25fr .75fr">
+      <div class="checks">
+        <div class="check" data-reveal>
+          <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l4.5 4.5L19.5 7"/></svg></span>
+          <p>تست‌ها و بررسی‌های امنیتی موردنیاز بر روی بخش‌های مختلف سامانه انجام شده است.</p>
+        </div>
+        <div class="check" data-reveal>
+          <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l4.5 4.5L19.5 7"/></svg></span>
+          <p>موارد و باگ‌های شناسایی‌شده در فرآیند ارزیابی، تا سطح موردنیاز اصلاح و برطرف شده‌اند.</p>
+        </div>
+        <div class="check" data-reveal>
+          <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l4.5 4.5L19.5 7"/></svg></span>
+          <p>نسخه‌های آزمایشی اپلیکیشن‌های مشتری و بانکدار در بسترهای Android و PWA منتشر و جهت انجام تست‌های فنی و کاربری در اختیار تیم‌های مربوطه قرار گرفته‌اند.</p>
+        </div>
+        <div class="check" data-reveal>
+          <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l4.5 4.5L19.5 7"/></svg></span>
+          <p>نسخه قابل استفاده سامانه برای افراد و کاربران اعلام‌شده از سوی بانک آماده و ارائه شده و دسترسی‌های لازم جهت انجام تست، ارزیابی فرآیندها و دریافت بازخورد ذی‌نفعان برقرار گردیده است.</p>
+        </div>
+        <div class="check" data-reveal>
+          <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l4.5 4.5L19.5 7"/></svg></span>
+          <p>نسخه آزمایشی سامانه جهت بررسی در اختیار بانک قرار گرفته و ارزیابی‌های لازم توسط ذی‌نفعان، کاربران منتخب و تیم‌های مرتبط انجام شده یا در حال انجام است.</p>
+        </div>
+      </div>
+      <!-- محل قرارگیری تصاویر: در هر shot-screen تگ <img> با مسیر اصلی فایل‌ها درج شود -->
+      <div class="gallery" style="flex-direction:column;align-items:center">
+        <figure class="shot" data-reveal>
+          <div class="shot-frame"><div class="shot-screen">
+            <div class="shot-fallback"><div class="ph-zone">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+              <span><img src="../assets/screenshots/بخش مشتری - نرم افزار اسمارت/1.jpg" alt="نمونه صفحه از اپلیکیشن مشتری — ۱"><br>صفحه ورود</span>
+            </div></div>
+          </div></div>
+          <figcaption>نمونه صفحه ورود اپلیکیشن بانکدار — ۱</figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+  <p class="notes">این اسلاید نشان می‌دهد سامانه وارد فاز ارزیابی شده است: تست‌های امنیتی انجام و باگ‌ها برطرف شده، نسخه‌های آزمایشی در بستر Android و PWA منتشر شده و نسخه قابل استفاده برای کاربران اعلام‌شده از سوی بانک ارائه و دسترسی‌ها برقرار گردیده است. ارزیابی ذی‌نفعان در حال انجام است.</p>
+</section>
+
+<!-- ================================================================
+     SLIDE 14 — DOCUMENTATION & TRAINING
+================================================================ -->
+<section class="slide slide--light" data-title="مستندات و آموزش" role="group" aria-roledescription="اسلاید" aria-label="اسلاید ۱۴ از ۱۵">
+  <div class="s-bg" aria-hidden="true"></div>
+  <span class="ghost" aria-hidden="true">۱۴</span>
+  <div class="wrap">
+    <header class="shead">
+      <div class="shead-num" data-reveal>۱۴</div>
+      <div>
+        <p class="eyebrow" data-reveal>دانش و توانمندسازی</p>
+        <h2 class="stitle" data-reveal>مستندات و آموزش</h2>
+        <div class="rule" data-reveal aria-hidden="true"></div>
+      </div>
+    </header>
+    <p class="lead" data-reveal>پروژه علاوه بر توسعه نرم‌افزار، مستندسازی کامل و قابلیت آموزش را نیز پوشش داده است:</p>
+    <div class="card-grid g-2">
+      <div class="card" data-reveal>
+        <span class="c-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h8l4 4v14H7z"/><path d="M15 3v4h4"/><path d="M10 12h6M10 16h6"/></svg></span>
+        <h3>تهیه و تجمیع مستندات</h3>
+        <p>مستندات موردنیاز پروژه در حوزه‌های فنی، معماری، زیرساخت، سرویس‌ها، فرآیندهای کسب‌وکاری و سایر اقلام موردنیاز بانک و شرکت تاتا تهیه، تکمیل و تجمیع شده است.</p>
+      </div>
+      <div class="card" data-reveal>
+        <span class="c-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="6" rx="1.6"/><rect x="3" y="12" width="18" height="6" rx="1.6"/><path d="M7 6h.01M7 15h.01"/></svg></span>
+        <h3>مستندسازی ساختاریافته</h3>
+        <p>مستندسازی ساختاریافته پروژه به‌منظور تسهیل فرآیند استقرار، پشتیبانی، نگهداری و انتقال دانش انجام شده است.</p>
+      </div>
+      <div class="card" data-reveal>
+        <span class="c-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 9 12 4 2 9l10 5z"/><path d="M6 11.5V16c0 1.7 2.7 3 6 3s6-1.3 6-3v-4.5"/><path d="M22 9v5"/></svg></span>
+        <h3>قابلیت آموزش</h3>
+        <p>قابلیت آموزش با هدف ارتقای توانمندی کاربران، تسهیل آشنایی با فرآیندها و امکانات سامانه و کاهش وابستگی به آموزش‌های حضوری پیاده‌سازی شده است.</p>
+      </div>
+      <div class="card" data-reveal>
+        <span class="c-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v12H8l-4 4z"/><path d="M8 9.5h8M8 12.5h5"/></svg></span>
+        <h3>ابلاغ اقلام آموزشی</h3>
+        <p>مستندات و اقلام مربوط به بخش آموزش نیز تهیه و ابلاغ گردیده است.</p>
+      </div>
+    </div>
+  </div>
+  <p class="notes">تأکید کنید که پروژه صرفاً توسعه نرم‌افزاری نیست؛ مستندات کامل در حوزه‌های فنی، معماری، زیرساخت، سرویس‌ها و فرآیندهای کسب‌وکاری تجمیع شده و مستندسازی ساختاریافته برای استقرار، پشتیبانی، نگهداری و انتقال دانش انجام شده است. قابلیت آموزش نیز برای توانمندسازی کاربران و کاهش وابستگی به آموزش حضوری پیاده‌سازی و ابلاغ شده است.</p>
+</section>
+
+<!-- ================================================================
+     SLIDE 15 — OPEN ITEMS & NEXT STEPS (dark)
+================================================================ -->
+<section class="slide slide--dark" data-title="موارد باز، پیش‌نیازها و گام‌های بعدی" role="group" aria-roledescription="اسلاید" aria-label="اسلاید ۱۵ از ۱۵">
+  <div class="s-bg" aria-hidden="true"></div>
+  <span class="ghost" aria-hidden="true">۱۵</span>
+  <div class="wrap">
+    <header class="shead">
+      <div class="shead-num" data-reveal>۱۵</div>
+      <div>
+        <p class="eyebrow" data-reveal>مسیر بهره‌برداری</p>
+        <h2 class="stitle" data-reveal>موارد باز، پیش‌نیازها و گام‌های بعدی</h2>
+        <div class="rule" data-reveal aria-hidden="true"></div>
+      </div>
+    </header>
+    <p class="lead" data-reveal>برای تکمیل پروژه، چهار موضوع کلیدی نیازمند تعیین تکلیف از سوی ذی‌نفعان است:</p>
+    <div class="dep-grid">
+      <article class="dep" data-reveal>
+        <div class="dep-head"><span class="dep-num">۱</span><h3>تکمیل فرآیند Ticketing شرکت چابک</h3></div>
+        <p>به‌منظور تکمیل کامل چرخه Ticketing، لازم است پاسخ نهایی تیکت در قالب سرویس مربوطه از سمت شرکت چابک در اختیار سامانه قرار گیرد.</p>
+        <p>بخش مرتبط در پروژه پس از دریافت سرویس یا قرارداد نهایی API قابل تکمیل خواهد بود.</p>
+        <span class="dep-tag">سرویس بیرونی</span>
+      </article>
+      <article class="dep" data-reveal>
+        <div class="dep-head"><span class="dep-num">۲</span><h3>تعیین تکلیف سرویس IVR</h3></div>
+        <p>در صورت نهایی‌شدن استفاده از IVR در فرآیندهای سامانه، مستندات فنی، قرارداد سرویس و اطلاعات موردنیاز جهت یکپارچه‌سازی باید از شرکت ارائه‌دهنده دریافت شود.</p>
+        <p>مطابق آخرین وضعیت اعلام‌شده از طرف شرکت چابک، در حال حاضر سرویس مشخصی جهت ارائه در این حوزه وجود ندارد؛ بنابراین ادامه این بخش منوط به تعیین تکلیف نهایی و دریافت مستندات و سرویس مربوطه است.</p>
+        <span class="dep-tag">نیازمند تصمیم</span>
+      </article>
+      <article class="dep" data-reveal>
+        <div class="dep-head"><span class="dep-num">۳</span><h3>تعیین تکلیف و تأیید نفرساعت پروژه</h3></div>
+        <p>برآورد و مستندات مربوط به ۱۹٬۵۰۰ نفرساعت موردنیاز پروژه پیش‌تر ارائه شده است.</p>
+        <p>با وجود ارائه مستندات و توضیحات مرتبط، تاکنون نتیجه نهایی بررسی و تأیید نفرساعت اعلام نشده است. تعیین تکلیف این موضوع جهت برنامه‌ریزی منابع، ادامه فعالیت‌ها و جمع‌بندی پروژه ضروری است.</p>
+        <span class="dep-tag">نیازمند تأیید</span>
+      </article>
+      <article class="dep" data-reveal>
+        <div class="dep-head"><span class="dep-num">۴</span><h3>تحویل و آماده‌سازی سرورهای محیط عملیاتی</h3></div>
+        <p>جهت ورود سامانه به مرحله استقرار عملیاتی، لازم است سرورها و زیرساخت‌های محیط Production مطابق معماری و نیازمندی‌های اعلام‌شده از سوی بانک در اختیار تیم پروژه قرار گیرد.</p>
+        <p>پس از تحویل زیرساخت، فعالیت‌های نصب و پیکربندی سرویس‌ها، تنظیمات محیط عملیاتی، بهینه‌سازی Performance، اعمال تنظیمات امنیتی، اتصال به سرویس‌های زیرساختی، انجام تست‌های نهایی، بررسی پایداری و آماده‌سازی سامانه برای بهره‌برداری عملیاتی انجام خواهد شد.</p>
+        <span class="dep-tag">زیرساخت بانک</span>
+      </article>
+    </div>
+    <div class="steps-strip" data-reveal>
+      <p class="steps-cap">گام‌های بعدی پس از تأمین پیش‌نیازها:</p>
+      <div class="steps">
+        <span class="step"><span class="s-n">۱</span>دریافت سرویس نهایی Ticketing از چابک</span>
+        <span class="step-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        <span class="step"><span class="s-n">۲</span>تعیین تکلیف IVR</span>
+        <span class="step-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        <span class="step"><span class="s-n">۳</span>تأیید نفرساعت پروژه</span>
+        <span class="step-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        <span class="step"><span class="s-n">۴</span>تحویل زیرساخت محیط عملیاتی</span>
+        <span class="step-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        <span class="step"><span class="s-n">۵</span>انجام استقرار، تست نهایی و آماده‌سازی بهره‌برداری</span>
+      </div>
+    </div>
+  </div>
+  <p class="notes">این اسلاید انتظارات از بانک و سایر ذی‌نفعان را شفاف می‌کند. چهار موضوع اصلی: تکمیل سرویس Ticketing چابک، تعیین تکلیف IVR، تأیید نفرساعت پروژه و تحویل زیرساخت محیط عملیاتی. پیگیری و تعیین تکلیف این موارد، پیش‌نیاز ورود به فاز استقرار و بهره‌برداری عملیاتی است. پیام اصلی: بخش عمده توسعه انجام شده و برای ورود به عملیات، این پیش‌نیازهای کلیدی باید تعیین تکلیف شوند.</p>
+</section>
+
+</main>
+
+<!-- ================================================================
+     CHROME
+================================================================ -->
+<footer class="chrome">
+  <div class="chrome-brand">
+    <div class="brand-logos">
+      <span class="brand-logo" title="بانک تجارت"><img src="../assets/logos/tejarat.png" alt="لوگوی بانک تجارت"></span>
+      <span class="brand-logo" title="شرکت کارت اعتباری ایران کیش"><img src="../assets/logos/irankish.png" alt="لوگوی شرکت کارت اعتباری ایران کیش"></span>
+    </div>
+    <span class="btxt">بانک تجارت <span class="sep">|</span> شرکت کارت اعتباری ایران کیش</span>
+  </div>
+  <div class="chrome-tools">
+    <button type="button" class="tool" id="btnAlbum" aria-label="آلبوم تصاویر نرم‌افزار" title="آلبوم تصاویر">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2.5"/>
+        <circle cx="8.5" cy="8.5" r="1.8"/>
+        <path d="M21 15.5l-5-5L5 21"/>
+      </svg>
+    </button>
+    <button type="button" class="tool" id="btnOverview" aria-label="نمای کلی ارائه" title="نمای کلی">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.8"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.8"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.8"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.8"/></svg>
+    </button>
+    <button type="button" class="tool" id="btnNotes" aria-label="یادداشت‌های ارائه‌دهنده" title="یادداشت‌ها" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>
+    </button>
+    <button type="button" class="tool" id="btnFs" aria-label="تمام‌صفحه" title="تمام‌صفحه">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+    </button>
+    <span class="tool-sep" aria-hidden="true"></span>
+    <button type="button" class="nav-btn" id="btnPrev" aria-label="اسلاید قبلی" title="قبلی">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg>
+    </button>
+    <div class="counter" aria-live="polite" aria-label="شماره اسلاید"><span id="cNow">۱</span><span class="c-sep">/</span><span id="cAll">۱۵</span></div>
+    <button type="button" class="nav-btn" id="btnNext" aria-label="اسلاید بعدی" title="بعدی">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg>
+    </button>
+  </div>
+</footer>
+
+<!-- ================================================================
+     NOTES DRAWER
+================================================================ -->
+<aside class="drawer" id="drawer" aria-hidden="true" role="region" aria-label="یادداشت‌های ارائه‌دهنده">
+  <div class="drawer-head">
+    <span class="d-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg></span>
+    <div class="grow">
+      <strong>یادداشت ارائه‌دهنده</strong>
+      <span id="drawerSlide"></span>
+    </div>
+    <button type="button" class="icon-btn" id="drawerClose" aria-label="بستن یادداشت‌ها">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+</aside>
+
+<!-- ================================================================
+     OVERVIEW
+================================================================ -->
+<div class="overview" id="overview" aria-hidden="true" role="dialog" aria-modal="true" aria-label="نمای کلی ارائه">
+  <div class="ov-panel">
+    <div class="ov-head">
+      <div>
+        <p class="ov-kicker">نمای کلی ارائه</p>
+        <h3>اسلایدهای ارائه</h3>
+      </div>
+      <button type="button" class="icon-btn" id="ovClose" aria-label="بستن نمای کلی">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <div class="ov-grid" id="ovGrid"></div>
+  </div>
+</div>
+
+<noscript>
+  <style>
+    .slide{position:relative!important;opacity:1!important;visibility:visible!important;transform:none!important;pointer-events:auto!important;min-height:100vh}
+    .chrome,.progress{display:none!important}
+    [data-reveal]{opacity:1!important;transform:none!important}
+    .r-mask .mask-line{transform:none!important}
+    body{overflow:auto}
+  </style>
+</noscript>
+
+<script>
+(function(){
+"use strict";
+
+var stage = document.getElementById('stage');
+var slides = Array.prototype.slice.call(stage.querySelectorAll('.slide'));
+var total = slides.length;
+var cur = 0;
+var locked = false;
+
+var FD = '۰۱۲۳۴۵۶۷۸۹';
+function fa(n){ return String(n).replace(/[0-9]/g, function(d){ return FD[+d]; }); }
+
+var bar = document.getElementById('pbar');
+var cNow = document.getElementById('cNow');
+var cAll = document.getElementById('cAll');
+var drawer = document.getElementById('drawer');
+var drawerBody = document.getElementById('drawerBody');
+var drawerSlide = document.getElementById('drawerSlide');
+var btnNotes = document.getElementById('btnNotes');
+var btnPrev = document.getElementById('btnPrev');
+var btnNext = document.getElementById('btnNext');
+var btnFs = document.getElementById('btnFs');
+var btnOverview = document.getElementById('btnOverview');
+var overview = document.getElementById('overview');
+var ovGrid = document.getElementById('ovGrid');
+var ovClose = document.getElementById('ovClose');
+var drawerClose = document.getElementById('drawerClose');
+var notesOpen = false;
+var overviewOpen = false;
+var lastFocus = null;
+
+cAll.textContent = fa(total);
+
+/* ---------- lock/unlock slides ---------- */
+function lockSlide(s, hidden){
+  s.setAttribute('aria-hidden', hidden ? 'true' : 'false');
+  try { s.inert = hidden; } catch(e){}
+}
+
+/* ---------- staggered reveals ---------- */
+function setReveals(slide, on){
+  var els = slide.querySelectorAll('[data-reveal]');
+  for (var i = 0; i < els.length; i++){
+    var el = els[i];
+    if (on){
+      el.style.transitionDelay = Math.min(140 + i * 65, 1150) + 'ms';
+      el.classList.add('in');
+    } else {
+      el.classList.remove('in');
+      el.style.transitionDelay = '';
+    }
+  }
+}
+
+/* ---------- chrome update ---------- */
+function updateChrome(){
+  cNow.textContent = fa(cur + 1);
+  bar.style.width = ((cur + 1) / total * 100) + '%';
+  var nEl = slides[cur].querySelector('.notes');
+  drawerBody.textContent = nEl ? nEl.textContent.trim() : '';
+  drawerSlide.textContent = 'اسلاید ' + fa(cur + 1) + ' از ' + fa(total) + ' — ' + (slides[cur].getAttribute('data-title') || '');
+  for (var i = 0; i < ovGrid.children.length; i++){
+    ovGrid.children[i].classList.toggle('is-current', i === cur);
+  }
+}
+
+/* ---------- navigation ---------- */
+function go(idx){
+  if (idx === cur || idx < 0 || idx >= total || locked) return;
+  locked = true;
+  var dir = idx > cur ? 'next' : 'prev';
+  var old = slides[cur];
+  var nx = slides[idx];
+
+  old.classList.remove('is-active');
+  old.classList.add(dir === 'next' ? 'exit-next' : 'exit-prev');
+
+  nx.classList.remove('exit-next','exit-prev');
+  nx.classList.add(dir === 'next' ? 'pre-next' : 'pre-prev');
+  lockSlide(nx, false);
+  void nx.offsetWidth; /* force reflow */
+  nx.classList.remove('pre-next','pre-prev');
+  nx.classList.add('is-active');
+
+  setReveals(old, false);
+  setReveals(nx, true);
+
+  cur = idx;
+  updateChrome();
+
+  window.setTimeout(function(){
+    old.classList.remove('exit-next','exit-prev');
+    lockSlide(old, true);
+    locked = false;
+  }, 830);
+}
+
+/* ---------- build overview ---------- */
+slides.forEach(function(s, i){
+  var b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'ov-tile';
+  b.innerHTML = '<span class="ov-num">اسلاید ' + fa(i + 1) + '</span><span class="ov-title">' + (s.getAttribute('data-title') || '') + '</span>';
+  b.addEventListener('click', function(){
+    closeOverview();
+    window.setTimeout(function(){ go(i); }, 120);
+  });
+  ovGrid.appendChild(b);
+});
+
+/* ---------- overview open/close ---------- */
+function openOverview(){
+  overviewOpen = true;
+  lastFocus = document.activeElement;
+  overview.classList.add('open');
+  overview.setAttribute('aria-hidden','false');
+  var t = ovGrid.querySelector('.is-current') || ovGrid.firstChild;
+  if (t) t.focus();
+}
+function closeOverview(){
+  overviewOpen = false;
+  overview.classList.remove('open');
+  overview.setAttribute('aria-hidden','true');
+  if (lastFocus && lastFocus.focus) lastFocus.focus();
+}
+btnOverview.addEventListener('click', function(){ overviewOpen ? closeOverview() : openOverview(); });
+ovClose.addEventListener('click', closeOverview);
+overview.addEventListener('click', function(e){ if (e.target === overview) closeOverview(); });
+
+/* ---------- notes drawer ---------- */
+function toggleNotes(force){
+  notesOpen = (typeof force === 'boolean') ? force : !notesOpen;
+  drawer.classList.toggle('open', notesOpen);
+  drawer.setAttribute('aria-hidden', notesOpen ? 'false' : 'true');
+  btnNotes.classList.toggle('is-on', notesOpen);
+  btnNotes.setAttribute('aria-expanded', notesOpen ? 'true' : 'false');
+}
+btnNotes.addEventListener('click', function(){ toggleNotes(); });
+drawerClose.addEventListener('click', function(){ toggleNotes(false); });
+
+/* ---------- fullscreen ---------- */
+function toggleFs(){
+  var d = document;
+  if (!d.fullscreenElement && !d.webkitFullscreenElement){
+    var el = d.documentElement;
+    if (el.requestFullscreen) el.requestFullscreen().catch(function(){});
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+  } else {
+    if (d.exitFullscreen) d.exitFullscreen().catch(function(){});
+    else if (d.webkitExitFullscreen) d.webkitExitFullscreen();
+  }
+}
+btnFs.addEventListener('click', toggleFs);
+
+/* ---------- buttons ---------- */
+btnPrev.addEventListener('click', function(){ go(cur - 1); });
+btnNext.addEventListener('click', function(){ go(cur + 1); });
+
+/* ---------- keyboard ---------- */
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape'){
+    if (overviewOpen) closeOverview();
+    else if (notesOpen) toggleNotes(false);
+    return;
+  }
+  if (overviewOpen) return;
+  switch (e.key){
+    case 'ArrowLeft':
+    case 'PageDown':
+      e.preventDefault(); go(cur + 1); break;
+    case 'ArrowRight':
+    case 'PageUp':
+      e.preventDefault(); go(cur - 1); break;
+    case 'Home':
+      e.preventDefault(); go(0); break;
+    case 'End':
+      e.preventDefault(); go(total - 1); break;
+  }
+});
+
+/* ---------- touch / swipe (RTL: swipe right = next) ---------- */
+var tX = 0, tY = 0, tracking = false;
+stage.addEventListener('touchstart', function(e){
+  if (e.touches.length === 1){
+    tX = e.touches[0].clientX; tY = e.touches[0].clientY; tracking = true;
+  }
+}, {passive:true});
+stage.addEventListener('touchend', function(e){
+  if (!tracking) return;
+  tracking = false;
+  var dx = e.changedTouches[0].clientX - tX;
+  var dy = e.changedTouches[0].clientY - tY;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.4){
+    if (dx > 0) go(cur + 1); else go(cur - 1);
+  }
+}, {passive:true});
+
+/* ---------- graceful broken-image state ---------- */
+document.addEventListener('error', function(e){
+  var t = e.target;
+  if (t && t.tagName === 'IMG'){
+    var f = t.closest('.shot');
+    if (f){
+      f.classList.add('shot--failed');
+      t.style.display = 'none';
+    }
+  }
+}, true);
+
+/* ---------- init ---------- */
+slides.forEach(function(s, i){ if (i !== 0) lockSlide(s, true); });
+slides[0].classList.add('is-active');
+setReveals(slides[0], true);
+updateChrome();
+
+/* ============================================================
+   ALBUM GALLERY LOGIC
+============================================================ */
+var ALBUM = {
+  banker: [
+    // لاگین بانکدار (3 تصویر)
+    '../assets/screenshots/بخش لاگین بانکدار - نرم افزار اسمارت/1.jpg',
+    '../assets/screenshots/بخش لاگین بانکدار - نرم افزار اسمارت/2.jpg',
+    '../assets/screenshots/بخش لاگین بانکدار - نرم افزار اسمارت/3.jpg',
+    // بانکدار بعد از لاگین (11 تصویر)
+    '../assets/screenshots/بخش بانکدار - نرم افزار اسمارت/1.jpg',
+    '../assets/screenshots/بخش بانکدار - نرم افزار اسمارت/2.jpg',
+    '../assets/screenshots/بخش بانکدار - نرم افزار اسمارت/3.jpg',
+    '../assets/screenshots/بخش بانکدار - نرم افزار اسمارت/4.jpg',
+    '../assets/screenshots/بخش بانکدار - نرم افزار اسمارت/5.jpg',
+    '../assets/screenshots/بخش بانکدار - نرم افزار اسمارت/6.jpg',
+    '../assets/screenshots/بخش بانکدار - نرم افزار اسمارت/7.jpg',
+    '../assets/screenshots/بخش بانکدار - نرم افزار اسمارت/8.jpg',
+    '../assets/screenshots/بخش بانکدار - نرم افزار اسمارت/9.jpg',
+    '../assets/screenshots/بخش بانکدار - نرم افزار اسمارت/10.jpg',
+    '../assets/screenshots/بخش بانکدار - نرم افزار اسمارت/11.jpg'
+  ],
+  customer: [
+    '../assets/screenshots/بخش مشتری - نرم افزار اسمارت/1.jpg',
+    '../assets/screenshots/بخش مشتری - نرم افزار اسمارت/2.jpg',
+    '../assets/screenshots/بخش مشتری - نرم افزار اسمارت/3.jpg',
+    '../assets/screenshots/بخش مشتری - نرم افزار اسمارت/4.jpg',
+    '../assets/screenshots/بخش مشتری - نرم افزار اسمارت/5.jpg',
+    '../assets/screenshots/بخش مشتری - نرم افزار اسمارت/6.jpg',
+    '../assets/screenshots/بخش مشتری - نرم افزار اسمارت/7.jpg',
+    '../assets/screenshots/بخش مشتری - نرم افزار اسمارت/8.jpg'
+  ]
+};
+
+var album = document.getElementById('album');
+var btnAlbum = document.getElementById('btnAlbum');
+var albumClose = document.getElementById('albumClose');
+var albumImg = document.getElementById('albumImg');
+var albumBadge = document.getElementById('albumBadge');
+var albumThumbs = document.getElementById('albumThumbs');
+var albumPrev = document.getElementById('albumPrev');
+var albumNext = document.getElementById('albumNext');
+var albumFs = document.getElementById('albumFs');
+var albumFsPreview = document.getElementById('albumFsPreview');
+var albumFsImg = document.getElementById('albumFsImg');
+var albumFsClose = document.getElementById('albumFsClose');
+var albumImgWrap = document.querySelector('.album-img-wrap');
+
+var currentTab = 'banker';
+var currentIdx = 0;
+var albumOpen = false;
+var lastFocus = null;
+
+// Update counts
+document.getElementById('bankerCount').textContent = fa(ALBUM.banker.length);
+document.getElementById('customerCount').textContent = fa(ALBUM.customer.length);
+
+function getCurrentList(){ return ALBUM[currentTab]; }
+
+function renderThumbs(){
+  albumThumbs.innerHTML = '';
+  var list = getCurrentList();
+  list.forEach(function(src, i){
+    var t = document.createElement('button');
+    t.type = 'button';
+    t.className = 'album-thumb' + (i === currentIdx ? ' active' : '');
+    t.setAttribute('aria-label', 'تصویر ' + fa(i + 1));
+    t.innerHTML = '<img src="' + src + '" alt="" loading="lazy"><span class="tnum">' + fa(i + 1) + '</span>';
+    t.addEventListener('click', function(){
+      currentIdx = i;
+      updateAlbum();
+      var active = albumThumbs.querySelector('.active');
+      if (active) active.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
+    });
+    albumThumbs.appendChild(t);
+  });
+}
+
+function updateAlbum(){
+  var list = getCurrentList();
+  albumImg.src = list[currentIdx];
+  albumImg.onerror = function(){
+    this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300"><rect width="200" height="300" fill="%23f4f6f9"/><text x="100" y="150" text-anchor="middle" fill="%235c6f8a" font-family="sans-serif" font-size="14">تصویر بارگذاری نشد</text></svg>';
+  };
+  albumBadge.textContent = fa(currentIdx + 1) + ' / ' + fa(list.length);
+  albumPrev.disabled = currentIdx === 0;
+  albumNext.disabled = currentIdx === list.length - 1;
+  
+  // Update thumb active state
+  var thumbs = albumThumbs.querySelectorAll('.album-thumb');
+  thumbs.forEach(function(t, i){ t.classList.toggle('active', i === currentIdx); });
+  
+  // Scroll active thumb into view
+  var activeThumb = albumThumbs.querySelector('.active');
+  if (activeThumb) activeThumb.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
+}
+
+function openAlbum(tab){
+  albumOpen = true;
+  lastFocus = document.activeElement;
+  currentTab = tab || 'banker';
+  currentIdx = 0;
+  album.classList.add('open');
+  album.setAttribute('aria-hidden','false');
+  btnAlbum.classList.add('is-on');
+  
+  // Update tabs
+  document.querySelectorAll('.album-tab').forEach(function(t){
+    var isActive = t.getAttribute('data-tab') === currentTab;
+    t.classList.toggle('active', isActive);
+    t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+  });
+  
+  renderThumbs();
+  updateAlbum();
+  
+  // Focus first nav
+  window.setTimeout(function(){ albumPrev.focus(); }, 100);
+}
+
+function closeAlbum(){
+  albumOpen = false;
+  album.classList.remove('open');
+  album.setAttribute('aria-hidden','true');
+  btnAlbum.classList.remove('is-on');
+  if (lastFocus && lastFocus.focus) lastFocus.focus();
+  closeFsPreview();
+}
+
+function openFsPreview(){
+  albumFsImg.src = albumImg.src;
+  albumFsPreview.classList.add('open');
+  albumFsPreview.setAttribute('aria-hidden','false');
+}
+function closeFsPreview(){
+  albumFsPreview.classList.remove('open');
+  albumFsPreview.setAttribute('aria-hidden','true');
+}
+
+// Events
+btnAlbum.addEventListener('click', function(){ albumOpen ? closeAlbum() : openAlbum(); });
+albumClose.addEventListener('click', closeAlbum);
+album.addEventListener('click', function(e){ if (e.target === album) closeAlbum(); });
+
+document.querySelectorAll('.album-tab').forEach(function(tab){
+  tab.addEventListener('click', function(){
+    currentTab = this.getAttribute('data-tab');
+    currentIdx = 0;
+    document.querySelectorAll('.album-tab').forEach(function(t){
+      var isActive = t === tab;
+      t.classList.toggle('active', isActive);
+      t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+    renderThumbs();
+    updateAlbum();
+  });
+});
+
+albumPrev.addEventListener('click', function(){
+  if (currentIdx > 0){ currentIdx--; updateAlbum(); }
+});
+albumNext.addEventListener('click', function(){
+  if (currentIdx < getCurrentList().length - 1){ currentIdx++; updateAlbum(); }
+});
+albumFs.addEventListener('click', openFsPreview);
+albumImg.addEventListener('click', openFsPreview);
+albumFsClose.addEventListener('click', closeFsPreview);
+albumFsPreview.addEventListener('click', function(e){ if (e.target === albumFsPreview) closeFsPreview(); });
+
+// Keyboard inside album
+document.addEventListener('keydown', function(e){
+  if (!albumOpen) return;
+  if (e.key === 'Escape'){
+    if (albumFsPreview.classList.contains('open')){ closeFsPreview(); }
+    else { closeAlbum(); }
+    e.preventDefault();
+  }
+  if (albumFsPreview.classList.contains('open')) return;
+  if (e.key === 'ArrowLeft'){ e.preventDefault(); albumNext.click(); }
+  if (e.key === 'ArrowRight'){ e.preventDefault(); albumPrev.click(); }
+  if (e.key === ' '){ e.preventDefault(); openFsPreview(); }
+});
+
+// Touch swipe inside album
+var ax = 0, ay = 0, atracking = false;
+album.addEventListener('touchstart', function(e){
+  if (e.touches.length === 1){ ax = e.touches[0].clientX; ay = e.touches[0].clientY; atracking = true; }
+}, {passive:true});
+album.addEventListener('touchend', function(e){
+  if (!atracking) return;
+  atracking = false;
+  var dx = e.changedTouches[0].clientX - ax;
+  var dy = e.changedTouches[0].clientY - ay;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.4){
+    if (dx > 0) albumPrev.click(); else albumNext.click();
+  }
+}, {passive:true});
+    // ================= وصل کردن دکمه آلبوم =================
+    document.getElementById('btnAlbum').addEventListener('click', openAlbum);
+
+    // ================= کنترل کیبورد داخل آلبوم =================
+    // وقتی آلبوم بازه، کلیدها به جای اسلایدها، تصاویر رو کنترل کنن
+    document.addEventListener('keydown', function (e) {
+        if (!albumOpen) return;
+        if (e.key === 'Escape')     { e.stopPropagation(); closeAlbum(); }
+        else if (e.key === 'ArrowLeft')  { e.stopPropagation(); nextImage(); }
+        else if (e.key === 'ArrowRight') { e.stopPropagation(); prevImage(); }
+    }, true);
+
+
+
+})();
+</script>
+  <!-- ============ آلبوم تصاویر نرم‌افزار ============ -->
+  <div class="album-overlay" id="albumOverlay" aria-hidden="true">
+    <div class="album-shell">
+
+      <!-- هدر آلبوم -->
+      <div class="album-header">
+        <div class="album-title-wrap">
+          <span class="album-badge">آلبوم تصاویر</span>
+          <h3 class="album-title" id="albumTitle">نمایشگر تصاویر نرم‌افزار</h3>
+        </div>
+
+        <!-- تب‌های دو بخش -->
+        <div class="album-tabs" role="tablist">
+          <button type="button" class="album-tab is-active" data-section="banker" role="tab">بانکدار</button>
+          <button type="button" class="album-tab" data-section="customer" role="tab">مشتری</button>
+        </div>
+
+        <button type="button" class="album-close" id="albumClose" aria-label="بستن آلبوم">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+
+      <!-- بدنه نمایشگر -->
+      <div class="album-body">
+        <button type="button" class="album-nav prev" id="albumPrev" aria-label="تصویر قبلی">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 5 7 7-7 7"/></svg>
+        </button>
+
+        <div class="album-stage">
+          <img id="albumImage" src="" alt="نمایش تصویر نرم‌افزار">
+          <div class="album-spinner" id="albumSpinner"></div>
+          <div class="album-error" id="albumError">
+            <span>تصویر بارگذاری نشد</span>
+            <small>مسیر فایل را بررسی کنید</small>
+          </div>
+        </div>
+
+        <button type="button" class="album-nav next" id="albumNext" aria-label="تصویر بعدی">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 8 12l7 7"/></svg>
+        </button>
+      </div>
+
+      <!-- نوار پایین: تامبنیل + شمارنده -->
+      <div class="album-footer">
+        <div class="album-counter"><span id="albumCurrent">۱</span> / <span id="albumTotal">۱</span></div>
+        <div class="album-caption" id="albumCaption"></div>
+        <div class="album-thumbs" id="albumThumbs"></div>
+      </div>
+
+    </div>
+  </div>
+  <script>
+(function () {
+  'use strict';
+
+  /* ---------- ساخت خودکار مسیر تصاویر ---------- */
+  var faNum = function (n) { return String(n).replace(/\d/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'[+d]; }); };
+
+  var bankerImages = [];
+  for (var i = 1; i <= 3; i++) {
+    bankerImages.push({
+      src: '../assets/screenshots/بخش لاگین بانکدار - نرم افزار اسمارت/' + i + '.jpg',
+      label: 'صفحه ورود — ' + faNum(i)
+    });
+  }
+  for (var j = 1; j <= 11; j++) {
+    bankerImages.push({
+      src: '../assets/screenshots/بخش بانکدار - نرم افزار اسمارت/' + j + '.jpg',
+      label: 'محیط بانکدار — ' + faNum(j)
+    });
+  }
+
+  var customerImages = [];
+  for (var k = 1; k <= 8; k++) {
+    customerImages.push({
+      src: '../assets/screenshots/بخش مشتری - نرم افزار اسمارت/' + k + '.jpg',
+      label: 'محیط مشتری — ' + faNum(k)
+    });
+  }
+
+  var SECTIONS = {
+    banker:   { title: 'اپلیکیشن بانکدار', images: bankerImages },
+    customer: { title: 'اپلیکیشن مشتری',   images: customerImages }
+  };
+
+  /* ---------- گرفتن المان‌ها ---------- */
+  var overlay   = document.getElementById('albumOverlay');
+  var btnOpen   = document.getElementById('btnAlbum');
+  var btnClose  = document.getElementById('albumClose');
+  var btnPrev   = document.getElementById('albumPrev');
+  var btnNext   = document.getElementById('albumNext');
+  var img       = document.getElementById('albumImage');
+  var stage     = img ? img.parentElement : null;
+  var spinner   = document.getElementById('albumSpinner');
+  var errBox    = document.getElementById('albumError');
+  var capEl     = document.getElementById('albumCaption');
+  var curEl     = document.getElementById('albumCurrent');
+  var totEl     = document.getElementById('albumTotal');
+  var thumbsEl  = document.getElementById('albumThumbs');
+  var titleEl   = document.getElementById('albumTitle');
+  var tabs      = document.querySelectorAll('.album-tab');
+
+  /* اگر ساختار آلبوم وجود نداشت، بدون خطا خارج شو */
+  if (!overlay || !btnOpen) { return; }
+
+  var currentSection = 'banker';
+  var currentIndex = 0;
+  var isOpen = false;
+
+  function getImages() { return SECTIONS[currentSection].images; }
+
+  /* ---------- باز و بسته کردن ---------- */
+  function openAlbum() {
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    isOpen = true;
+    renderThumbs();
+    showImage(currentIndex);
+  }
+
+  function closeAlbum() {
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    isOpen = false;
+  }
+
+  /* ---------- تعویض بخش (بانکدار / مشتری) ---------- */
+  function switchSection(key) {
+    if (!SECTIONS[key] || key === currentSection) { return; }
+    currentSection = key;
+    currentIndex = 0;
+    tabs.forEach(function (t) {
+      t.classList.toggle('is-active', t.getAttribute('data-section') === key);
+    });
+    if (titleEl) { titleEl.textContent = SECTIONS[key].title; }
+    renderThumbs();
+    showImage(0);
+  }
+
+  /* ---------- ساخت تامبنیل‌ها ---------- */
+  function renderThumbs() {
+    if (!thumbsEl) { return; }
+    thumbsEl.innerHTML = '';
+    getImages().forEach(function (item, idx) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'album-thumb' + (idx === currentIndex ? ' is-active' : '');
+      b.setAttribute('aria-label', item.label);
+      var im = document.createElement('img');
+      im.src = item.src;
+      im.alt = item.label;
+      im.loading = 'lazy';
+      b.appendChild(im);
+      b.addEventListener('click', function () { showImage(idx); });
+      thumbsEl.appendChild(b);
+    });
+  }
+
+  /* ---------- نمایش تصویر اصلی ---------- */
+  function showImage(idx) {
+    var imgs = getImages();
+    if (!imgs.length) { return; }
+    currentIndex = (idx + imgs.length) % imgs.length;
+    var item = imgs[currentIndex];
+
+    if (stage) { stage.classList.add('loading'); stage.classList.remove('error'); }
+    img.src = item.src;
+    img.alt = item.label;
+
+    if (capEl)  { capEl.textContent = item.label; }
+    if (curEl)  { curEl.textContent = faNum(currentIndex + 1); }
+    if (totEl)  { totEl.textContent = faNum(imgs.length); }
+
+    /* به‌روزرسانی وضعیت active تامبنیل‌ها */
+    if (thumbsEl) {
+      var th = thumbsEl.children;
+      for (var x = 0; x < th.length; x++) {
+        th[x].classList.toggle('is-active', x === currentIndex);
+      }
+      var active = thumbsEl.children[currentIndex];
+      if (active && active.scrollIntoView) { active.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' }); }
+    }
+  }
+
+  function nextImage() { showImage(currentIndex + 1); }
+  function prevImage() { showImage(currentIndex - 1); }
+
+  /* ---------- رویدادهای لود و خطای تصویر ---------- */
+  if (img) {
+    img.addEventListener('load', function () {
+      if (stage) { stage.classList.remove('loading'); }
+    });
+    img.addEventListener('error', function () {
+      if (stage) { stage.classList.remove('loading'); stage.classList.add('error'); }
+    });
+  }
+
+  /* ---------- اتصال کلیک‌ها (این بخش کلیدی‌ترین قسمت حل مشکل است) ---------- */
+  btnOpen.addEventListener('click', openAlbum);
+  if (btnClose) { btnClose.addEventListener('click', closeAlbum); }
+  if (btnNext)  { btnNext.addEventListener('click', nextImage); }
+  if (btnPrev)  { btnPrev.addEventListener('click', prevImage); }
+
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () {
+      switchSection(t.getAttribute('data-section'));
+    });
+  });
+
+  /* بستن با کلیک روی پس‌زمینه تیره */
+  overlay.addEventListener('click', function (e) {
+    if (e.target === overlay) { closeAlbum(); }
+  });
+
+  /* ---------- کیبورد داخل آلبوم ---------- */
+  document.addEventListener('keydown', function (e) {
+    if (!isOpen) { return; }
+    if (e.key === 'Escape')          { e.stopPropagation(); closeAlbum(); }
+    else if (e.key === 'ArrowLeft')  { e.stopPropagation(); nextImage(); }
+    else if (e.key === 'ArrowRight') { e.stopPropagation(); prevImage(); }
+  }, true);
+
+})();
+</script>
+</body>
+</html>
+
